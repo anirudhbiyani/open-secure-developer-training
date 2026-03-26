@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRC Engineering: Secure Development Lifecycle Training</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --primary-purple:#7B2CBF; --light-purple:#E0B0FF; --dark-purple:#4A1A6B;
+      --primary-teal:#06A77D; --light-teal:#B2F5E8; --dark-teal:#045F4A;
+      --primary-off-black:#17191E; --primary-white:#FFFFFF; --success-green:#4CAF50;
+      --warning-amber:#FF9800; --error-red:#F44336; --neutral-gray:#9E9E9E;
+      --light-gray:#F5F5F5; --medium-gray:#E0E0E0; --primary-gradient: linear-gradient(135deg, #7B2CBF 0%, #06A77D 100%);
+    }
+    
+    body { 
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+      background: #0a0e27;
+      color:var(--primary-off-black); 
+      min-height:100vh; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      padding:20px; 
+      line-height:1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Static gradient background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(123,44,191,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(123,44,191,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 20%, rgba(0,85,204,0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+    
+    .module-container { 
+      background:var(--primary-white); 
+      border-radius:16px; 
+      box-shadow:0 10px 40px rgba(0,8,77,.25); 
+      max-width:1100px; 
+      width:100%; 
+      overflow:hidden;
+    }
+    
+    .grc-header { 
+      background:var(--primary-gradient); 
+      padding:20px 32px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:space-between; 
+      color:var(--primary-white);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .grc-logo { 
+      display:flex; 
+      align-items:center; 
+      gap:16px; 
+      font-weight:700; 
+      font-size:20px;
+      z-index: 2;
+    }
+    
+    .grc-owl { 
+      width:48px; 
+      height:48px; 
+      background:var(--primary-white); 
+      border-radius:12px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      font-size:28px;
+      animation: bounce 2s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .grc-owl:hover {
+      animation: none;
+      transform: rotate(10deg) scale(1.1);
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    
+    .progress-bar { 
+      height:6px; 
+      background:var(--medium-gray); 
+      position:relative; 
+      overflow:hidden; 
+    }
+    
+    .progress-fill { 
+      height:100%; 
+      background:var(--primary-gradient); 
+      width:0%; 
+      transition:width .5s ease;
+      box-shadow: 0 0 10px rgba(123,44,191,0.5);
+    }
+    
+    .slide { 
+      padding:56px 48px; 
+      min-height:580px; 
+      display:none; 
+      animation:slideIn .4s ease;
+      position: relative;
+    }
+    
+    .slide.active { display:block; }
+    
+    @keyframes slideIn { 
+      from{ opacity:0; transform:translateX(30px); } 
+      to{ opacity:1; transform:translateX(0); } 
+    }
+    
+    /* Hide slide content briefly during restoration */
+    .slide.restoring {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    h1 { 
+      color:var(--dark-purple); 
+      font-size:2.5rem; 
+      font-weight:800; 
+      margin-bottom:24px; 
+      text-align:center; 
+      line-height:1.2; 
+    }
+    
+    h2 { 
+      color:var(--dark-purple); 
+      font-size:2rem; 
+      font-weight:700; 
+      margin-bottom:24px; 
+    }
+    
+    p { 
+      font-size:1.125rem; 
+      margin-bottom:20px; 
+      color:var(--primary-off-black); 
+      line-height:1.7;
+    }
+    
+    .intro-animation {
+      font-size: 120px;
+      text-align: center;
+      margin: 40px 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin: 32px 0;
+    }
+    
+    .info-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: 2px solid var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      border-color: var(--primary-purple);
+    }
+    
+    .info-card-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    
+    .info-card h3 {
+      color: var(--dark-purple);
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+    
+    .navigation { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      margin-top:40px; 
+      padding-top:32px; 
+      border-top:2px solid var(--medium-gray); 
+    }
+    
+    .btn { 
+      background:var(--primary-gradient); 
+      color:var(--primary-white); 
+      padding:14px 28px; 
+      border:none; 
+      border-radius:8px; 
+      font-size:1rem; 
+      font-weight:600; 
+      cursor:pointer; 
+      transition:all .3s ease; 
+      margin:8px; 
+      display:inline-flex; 
+      align-items:center; 
+      gap:8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn:hover { 
+      transform:translateY(-2px); 
+      box-shadow:0 6px 20px rgba(123,44,191,.3); 
+    }
+    
+    .btn-secondary { 
+      background:transparent; 
+      color:var(--primary-purple); 
+      border:2px solid var(--primary-purple); 
+    }
+    
+    .btn-secondary:hover { 
+      background:var(--light-purple); 
+      border-color:var(--dark-purple); 
+      color:var(--dark-purple); 
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ff3b30, #ff6b60);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    }
+    
+    .btn:disabled, .btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    /* Watering hole simulator */
+    .website-simulator {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 0;
+      margin: 24px 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    .browser-bar {
+      background: #2d2d2d;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #444;
+    }
+    
+    .browser-controls {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff5f57;
+    }
+    
+    .browser-dot:nth-child(2) { background: #ffbd2e; }
+    .browser-dot:nth-child(3) { background: #28ca42; }
+    
+    .url-bar {
+      flex: 1;
+      background: #1a1a1a;
+      color: #888;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    
+    .suspicious-url {
+      color: #ff3b30;
+      font-weight: bold;
+    }
+    
+    .website-content {
+      background: #fff;
+      padding: 32px;
+      min-height: 300px;
+      position: relative;
+    }
+    
+    .fake-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      text-align: center;
+      display: none;
+      z-index: 10;
+      border: 3px solid #ff3b30;
+    }
+    
+    .fake-popup.show {
+      display: block;
+      animation: popIn 0.3s ease;
+    }
+    
+    @keyframes popIn {
+      from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    
+    /* Interactive decision buttons */
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 50;
+    }
+    
+    .decision-btn {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .decision-btn:hover {
+      background: var(--light-purple);
+      border-color: var(--primary-purple);
+      box-shadow: 0 4px 12px rgba(123,44,191,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .decision-btn.selected {
+      background: var(--light-purple);
+      border-color: var(--primary-purple);
+      font-weight: 600;
+    }
+    
+    .decision-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    /* Detection challenge */
+    .detection-challenge {
+      background: #f8f9fa;
+      border: 2px solid var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    
+    .site-card {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 12px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .site-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .site-card.selected {
+      border-color: var(--primary-purple);
+      background: var(--light-purple);
+    }
+    
+    .site-card.correct {
+      border-color: var(--success-green);
+      background: rgba(76,175,80,0.1);
+    }
+    
+    .site-card.incorrect {
+      border-color: var(--error-red);
+      background: rgba(244,67,54,0.1);
+    }
+    
+    .url-display {
+      font-family: monospace;
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+      padding: 4px 8px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    
+    /* Gamification elements */
+    .achievement {
+      position: fixed;
+      top: 20px;
+      right: -500px;
+      background: #fff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: right 0.5s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    .achievement.show {
+      right: 20px;
+      pointer-events: auto;
+    }
+    
+    .achievement-icon {
+      font-size: 32px;
+      animation: celebrate 0.5s ease;
+    }
+    
+    @keyframes celebrate {
+      0% { transform: scale(0) rotate(0deg); }
+      50% { transform: scale(1.2) rotate(180deg); }
+      100% { transform: scale(1) rotate(360deg); }
+    }
+    
+    .score-display {
+      background: linear-gradient(135deg, #7B2CBF, #06A77D);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(123,44,191,0.3);
+    }
+    
+    /* Certificate */
+    .certificate {
+      text-align: center;
+      padding: 48px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 16px;
+      border: 3px solid var(--primary-purple);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .certificate::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(123,44,191,0.1), transparent);
+      animation: shine 3s linear infinite;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .certificate-seal {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      position: relative;
+      animation: sealRotate 20s linear infinite;
+    }
+    
+    @keyframes sealRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .trophy-icon {
+      font-size: 80px;
+      color: #FFD700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      animation: trophyGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes trophyGlow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    /* Confetti */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+      display: none;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--primary-purple);
+      animation: confettiFall 3s linear;
+    }
+    
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes flicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    
+    /* SCORM status indicator */
+    .scorm-status {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(23,25,30,.9);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: .75rem;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Feedback styles */
+    .feedback {
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      display: none;
+    }
+    
+    .feedback.correct {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid var(--success-green);
+    }
+    
+    .feedback.incorrect {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid var(--error-red);
+    }
+    
+    .feedback.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 2px solid #ffc107;
+    }
+    
+    /* Responsive */
+    @media (max-width:768px) {
+      .slide { padding:32px 24px; }
+      h1 { font-size:2rem; }
+      h2 { font-size:1.5rem; }
+      .decision-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Achievement Popup -->
+  <div class="achievement" id="achievementPopup" role="status" aria-live="polite">
+    <div class="achievement-icon" id="achievementIcon">🏆</div>
+    <div>
+      <div style="font-weight:700; color:var(--dark-purple);" id="achievementTitle">Achievement Unlocked!</div>
+      <div style="font-size:14px; color:#6c757d;" id="achievementText">You're making great progress!</div>
+    </div>
+  </div>
+
+  <!-- Confetti Container -->
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="module-container">
+    <div class="grc-header">
+      <div class="grc-logo">
+        <div class="grc-owl" onclick="owlClick()">👾</div>
+        <span>Secure Dev Lifecycle</span>
+      </div>
+    </div>
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Training progress"><div class="progress-fill" id="progressBar"></div></div>
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide active" id="slide1">
+      <h1>🔄 Secure Development Lifecycle</h1>
+      <div class="intro-animation">🔒</div>
+      <p style="text-align:center; font-size:1.4rem; margin-bottom:24px; color:#7B2CBF; font-weight:600;">
+        Welcome, Security-Minded Developer! Learn how to integrate security practices into every stage of the software development lifecycle.
+      </p>
+      
+      <div style="background:#f0f7ff; padding:24px; border-radius:12px; margin:20px auto; max-width:700px; border:1px solid #d0e4ff;">
+        <p style="font-size:1.1rem; color:#333; margin-bottom:16px; font-weight:600;">
+          In this training you will learn to:
+        </p>
+        <ul style="text-align:left; font-size:1rem; color:#555; line-height:1.8; max-width:500px; margin:0 auto; list-style:none;">
+          <li>🔍 <strong>Security Code Review</strong> — How to identify security issues during peer review</li>
+          <li>🧪 <strong>Security Testing</strong> — SAST, DAST, and dependency scanning in your CI/CD pipeline</li>
+          <li>🔒 <strong>Environment Security</strong> — Securing development, staging, and production environments</li>
+          <li>🤖 <strong>AI & Tool Security</strong> — Using AI coding assistants and third-party tools securely</li>
+        </ul>
+      </div>
+      
+      <div class="navigation">
+        <span></span>
+        <button class="btn" onclick="startTraining()">Begin Training →</button>
+      </div>
+    </div>
+
+    <!-- Slide 2: Security at Every Stage -->
+    <div class="slide" id="slide2">
+      <h2>🔄 Security at Every Stage</h2>
+      <p>Security must be integrated into every phase of the software development lifecycle — not bolted on at the end.</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">📋</span>
+          <h3>Design</h3>
+          <p>Threat modeling, security requirements, and architecture review before coding begins</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">💻</span>
+          <h3>Code</h3>
+          <p>Secure coding practices, pre-commit hooks, and IDE security plugins</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔍</span>
+          <h3>Review</h3>
+          <p>Security-focused code review and automated SAST scanning</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🧪</span>
+          <h3>Test</h3>
+          <p>Dynamic testing, penetration testing, and vulnerability scanning</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🚀</span>
+          <h3>Deploy</h3>
+          <p>Secure CI/CD pipelines, infrastructure as code security, and deployment gates</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">📊</span>
+          <h3>Monitor</h3>
+          <p>Runtime protection, logging, alerting, and incident response</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 3: Security Code Review Simulation -->
+    <div class="slide" id="slide3">
+      <h2>🔍 Security Code Review Simulation</h2>
+      <p>A colleague has submitted a pull request. Review the code diff below and identify the security issues:</p>
+      
+      <div class="simulation-box">
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; padding: 25px; box-shadow: 0 10px 40px rgba(123,44,191,0.2);">
+          <div style="background: #0d1117; border-radius: 8px; padding: 20px; border: 2px solid #30363d;">
+            <div style="display: flex; align-items: center; margin-bottom: 16px;">
+              <span style="color: #58a6ff; font-weight: bold; font-size: 16px;">PR #247:</span>
+              <span style="color: #c9d1d9; margin-left: 8px;">Add user search endpoint</span>
+              <span style="background: #238636; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: auto;">+47 −3</span>
+            </div>
+            
+            <div style="font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.8;">
+              <div style="color: #8b949e; padding: 4px 12px; background: rgba(110,118,129,0.1);">// api/users.js</div>
+              <div style="background: rgba(35,134,54,0.15); color: #adbac7; padding: 4px 12px; border-left: 3px solid #238636;">
+                <span style="color: #7ee787;">+</span> const query = "SELECT * FROM users WHERE name = '" + req.body.name + "'";
+              </div>
+              <div style="color: #8b949e; padding: 4px 12px; background: rgba(110,118,129,0.1);">// config/db.js</div>
+              <div style="background: rgba(35,134,54,0.15); color: #adbac7; padding: 4px 12px; border-left: 3px solid #238636;">
+                <span style="color: #7ee787;">+</span> const DB_PASSWORD = "admin123!prod";
+              </div>
+              <div style="color: #8b949e; padding: 4px 12px; background: rgba(110,118,129,0.1);">// middleware/auth.js</div>
+              <div style="background: rgba(35,134,54,0.15); color: #adbac7; padding: 4px 12px; border-left: 3px solid #238636;">
+                <span style="color: #7ee787;">+</span> // TODO: add input validation later
+              </div>
+              <div style="background: rgba(35,134,54,0.15); color: #adbac7; padding: 4px 12px; border-left: 3px solid #238636;">
+                <span style="color: #7ee787;">+</span> app.post('/search', handler);
+              </div>
+              <div style="color: #8b949e; padding: 4px 12px; background: rgba(110,118,129,0.1);">// utils/logger.js</div>
+              <div style="background: rgba(35,134,54,0.15); color: #adbac7; padding: 4px 12px; border-left: 3px solid #238636;">
+                <span style="color: #7ee787;">+</span> console.log("User login:", user.email, user.password, user.ssn);
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <p style="text-align:center; font-weight:600; margin-top:24px; color:var(--dark-purple); font-size: 18px;">
+          This PR has SQL concatenation, a hardcoded password, missing input validation, and debug logging of sensitive data. What do you do?
+        </p>
+      </div>
+      
+      <div class="decision-grid">
+        <button class="decision-btn" onclick="ransomwareDecision('wait')" id="ransom-wait">Approve the PR</button>
+        <button class="decision-btn" onclick="ransomwareDecision('disconnect')" id="ransom-disconnect">Request security changes</button>
+        <button class="decision-btn" onclick="ransomwareDecision('restart')" id="ransom-restart">Approve with follow-up ticket</button>
+        <button class="decision-btn" onclick="ransomwareDecision('antivirus')" id="ransom-antivirus">Run SAST scan only</button>
+      </div>
+      
+      <div id="ransomwareFeedback" style="margin-top:24px;"></div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="ransomwareContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 4: Development Environment Security -->
+    <div class="slide" id="slide4">
+      <h2>🔒 Development Environment Security</h2>
+      <p>Your development environment is a gateway to production. Secure it like the critical asset it is.</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">🔐</span>
+          <h3>Secure Your Workstation</h3>
+          <p>Full-disk encryption, auto-lock, and endpoint protection on your development machine</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔑</span>
+          <h3>Protect SSH Keys</h3>
+          <p>Use passphrases on SSH keys, use ssh-agent, and rotate keys regularly</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🛠️</span>
+          <h3>Secure Your IDE</h3>
+          <p>Only install verified extensions, review extension permissions, and keep your IDE updated</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🌍</span>
+          <h3>Use Separate Environments</h3>
+          <p>Never test against production data. Use isolated dev/staging environments with synthetic data</p>
+        </div>
+      </div>
+      
+      <p style="text-align:center; color:var(--error-red); font-weight:600; margin-top:24px;">
+        ⚠️ A compromised dev environment = A compromised production system!
+      </p>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 5: PR Review Scenario -->
+    <div class="slide" id="slide5">
+      <h2>🔍 Code Review Decision</h2>
+      <p>A colleague submits a PR with the note "urgent hotfix — needs to go to prod ASAP." The code changes look correct but you notice the PR skips the normal security review pipeline.</p>
+      
+      <div class="website-simulator">
+        <div class="browser-bar">
+          <div class="browser-controls">
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+          </div>
+          <div class="url-bar">github.com/your-org/main-app/pull/312</div>
+        </div>
+        <div class="website-content" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+          <div style="text-align:center; padding:40px;">
+            <div id="lockIcon" style="font-size:80px; margin-bottom:20px;">⚡</div>
+            <h3 id="deviceStatus">Urgent Hotfix PR #312</h3>
+            <p style="margin:20px 0;">CI checks passed, but security review pipeline was skipped</p>
+            <p style="font-weight:600;">Colleague: "Production is broken, we need this merged NOW!"</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="decision-grid">
+        <button class="decision-btn" onclick="lockDecision('quick')" id="lock-quick">Approve immediately — it's urgent</button>
+        <button class="decision-btn" onclick="lockDecision('lock')" id="lock-lock">Request security review before merging</button>
+        <button class="decision-btn" onclick="lockDecision('ask')" id="lock-ask">Ask the colleague to explain the urgency</button>
+        <button class="decision-btn" onclick="lockDecision('take')" id="lock-take">Merge and monitor</button>
+      </div>
+      
+      <div id="lockFeedback" style="margin-top:24px;"></div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="lockContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 6: Authentication & Authorization in Code -->
+    <div class="slide" id="slide6">
+      <h2>🔐 Authentication & Authorization in Code</h2>
+      <p>Auth is one of the most critical parts of your application. Getting it wrong means game over.</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">📚</span>
+          <h3>Use Established Auth Libraries</h3>
+          <p>Don't build your own auth. Use OAuth 2.0, OIDC, and established frameworks like Passport.js, Spring Security</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🛡️</span>
+          <h3>Implement Proper Authorization</h3>
+          <p>Always enforce authorization on the server side. Never rely on client-side checks alone</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🍪</span>
+          <h3>Session Management</h3>
+          <p>Use secure, httpOnly, sameSite cookies. Implement proper session expiration and token rotation</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 7: Security Testing in Your Pipeline -->
+    <div class="slide" id="slide7">
+      <h2>🧪 Security Testing in Your Pipeline</h2>
+      <p>Click on each security tool type to learn when and how to use it in your CI/CD pipeline:</p>
+      
+      <div class="simulation-box">
+        <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          <div style="background:#e8f5e9; border:2px solid #4CAF50; border-radius:8px; padding:15px; margin-bottom:20px;">
+            <p style="margin:0; color:#2E7D32; font-weight:600;">🔧 Click each tool type below to see example findings and learn how they protect your code:</p>
+          </div>
+          
+          <div id="passwordInput" style="display:none;"></div>
+          <div id="strengthBar" style="display:none;"></div>
+          <div id="strengthFeedback" style="display:none;"></div>
+          <div id="req-length" style="display:none;"></div>
+          <div id="req-upper" style="display:none;"></div>
+          <div id="req-lower" style="display:none;"></div>
+          <div id="req-number" style="display:none;"></div>
+          <div id="req-special" style="display:none;"></div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+            <button onclick="testPassword('SAST')" style="padding:20px; border:2px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; text-align:left; transition: all 0.3s ease;" id="tool-sast">
+              <div style="font-size:24px; margin-bottom:8px;">🔍</div>
+              <div style="font-weight:700; color:#333; margin-bottom:4px;">SAST</div>
+              <div style="font-size:13px; color:#666;">Static Application Security Testing — scans source code before deployment</div>
+            </button>
+            <button onclick="testPassword('DAST')" style="padding:20px; border:2px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; text-align:left; transition: all 0.3s ease;" id="tool-dast">
+              <div style="font-size:24px; margin-bottom:8px;">🌐</div>
+              <div style="font-weight:700; color:#333; margin-bottom:4px;">DAST</div>
+              <div style="font-size:13px; color:#666;">Dynamic Application Security Testing — tests running applications for vulnerabilities</div>
+            </button>
+            <button onclick="testPassword('SCA')" style="padding:20px; border:2px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; text-align:left; transition: all 0.3s ease;" id="tool-sca">
+              <div style="font-size:24px; margin-bottom:8px;">📦</div>
+              <div style="font-weight:700; color:#333; margin-bottom:4px;">SCA</div>
+              <div style="font-size:13px; color:#666;">Software Composition Analysis — checks dependencies for known vulnerabilities</div>
+            </button>
+            <button onclick="testPassword('SECRET')" style="padding:20px; border:2px solid #ddd; border-radius:8px; background:#fff; cursor:pointer; text-align:left; transition: all 0.3s ease;" id="tool-secret">
+              <div style="font-size:24px; margin-bottom:8px;">🔑</div>
+              <div style="font-weight:700; color:#333; margin-bottom:4px;">Secret Scanning</div>
+              <div style="font-size:13px; color:#666;">Detect credentials, API keys, and tokens accidentally committed to code</div>
+            </button>
+          </div>
+          
+          <div id="toolFindingDisplay" style="background:#f8f9fa; padding:20px; border-radius:8px; min-height:80px; border:2px solid #e0e0e0;">
+            <p style="text-align:center; color:#999; margin:0;">Select a tool above to see example findings</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="passwordCompleteFeedback" style="margin-top:24px;"></div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="passwordContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 8: Secure Use of AI & Third-Party Tools -->
+    <div class="slide" id="slide8">
+      <h2>🤖 Secure Use of AI & Third-Party Tools</h2>
+      <p>AI assistants and third-party integrations can boost productivity — but they also introduce new attack surfaces.</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">🤖</span>
+          <h3>AI Coding Assistants</h3>
+          <p>Never paste proprietary code, secrets, or customer data into AI tools. Use approved AI tools with enterprise data protections.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔗</span>
+          <h3>Third-Party Integrations</h3>
+          <p>Review permissions before connecting third-party apps to your GitHub/GitLab repos or CI/CD pipelines</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🧩</span>
+          <h3>Browser Extensions</h3>
+          <p>Only use approved developer tools extensions. Malicious extensions can steal tokens and source code</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 9: Unapproved AI Tool Alert -->
+    <div class="slide" id="slide9">
+      <h2>🚨 Unapproved AI Tool Alert</h2>
+      <p>A colleague recommends a new AI code review tool. Review the details below:</p>
+      
+      <div class="simulation-box">
+        <div class="website-simulator">
+          <div class="browser-bar">
+            <div class="browser-controls">
+              <div class="browser-dot"></div>
+              <div class="browser-dot"></div>
+              <div class="browser-dot"></div>
+            </div>
+            <div class="url-bar">codereviewai-pro.io/install</div>
+          </div>
+          <div class="website-content" style="background:#fff; padding:20px;">
+            <div style="background:#fff3cd; border:2px solid #ffc107; border-radius:8px; padding:20px; margin-bottom:20px;">
+              <h3 style="color:#856404; margin:0 0 10px 0;">⚠️ Unapproved Tool Installation Request</h3>
+              <p style="color:#333; margin:10px 0;"><strong>Application:</strong> CodeReviewAI Pro</p>
+              <p style="color:#333; margin:10px 0;"><strong>Recommended by:</strong> A colleague on your team</p>
+              <p style="color:#333; margin:10px 0;"><strong>Description:</strong> AI-powered code review tool that analyzes PRs for bugs and security issues</p>
+              <p style="color:#333; margin:10px 0;"><strong>Requirements:</strong></p>
+              <ul style="color:#d73502; margin-left:20px;">
+                <li>Requires OAuth access to your GitHub organization repositories</li>
+                <li>Reads all source code in connected repositories</li>
+                <li>Sends code snippets to external AI servers for analysis</li>
+                <li>Not on your organization's approved tools list</li>
+                <li>No enterprise data processing agreement in place</li>
+              </ul>
+            </div>
+            <p style="font-weight:600; color:#333;">Colleague says: "This tool caught 3 bugs in my last PR that I missed! It's a game changer for code quality!"</p>
+          </div>
+        </div>
+        
+        <p style="text-align:center; font-weight:600; margin-top:24px;">What's the correct action?</p>
+      </div>
+      
+      <div class="decision-grid">
+        <button class="decision-btn" onclick="softwareDecision('keep')" id="soft-keep">Install it — AI tools help productivity</button>
+        <button class="decision-btn" onclick="softwareDecision('remove')" id="soft-remove">Check with Security/IT before installing</button>
+        <button class="decision-btn" onclick="softwareDecision('isolate')" id="soft-isolate">Use it in a personal account first</button>
+        <button class="decision-btn" onclick="softwareDecision('wait')" id="soft-wait">Ask the colleague if it's safe</button>
+      </div>
+      
+      <div id="softwareFeedback" style="margin-top:24px;"></div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="softwareContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+    
+    <!-- Slide 10: Threat Modeling with STRIDE -->
+    <div class="slide" id="slide10">
+      <h2>🎯 Threat Modeling with STRIDE</h2>
+      <p>Threat modeling helps you think like an attacker before writing code. STRIDE is a systematic framework for identifying threats in your system design.</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">🎭</span>
+          <h3>Spoofing</h3>
+          <p>Can someone pretend to be another user or service? → Mitigate with strong authentication (MFA, mutual TLS, signed tokens)</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔧</span>
+          <h3>Tampering</h3>
+          <p>Can data be modified in transit or at rest? → Mitigate with integrity checks (HMAC, digital signatures, checksums)</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🚫</span>
+          <h3>Repudiation</h3>
+          <p>Can a user deny performing an action? → Mitigate with audit logging, timestamps, and non-repudiation mechanisms</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔍</span>
+          <h3>Information Disclosure</h3>
+          <p>Can sensitive data be exposed? → Mitigate with encryption, access controls, and data classification</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">⛔</span>
+          <h3>Denial of Service</h3>
+          <p>Can the system be made unavailable? → Mitigate with rate limiting, auto-scaling, circuit breakers, and input validation</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">⬆️</span>
+          <h3>Elevation of Privilege</h3>
+          <p>Can a user gain unauthorized access? → Mitigate with least privilege, RBAC, input validation, and sandboxing</p>
+        </div>
+      </div>
+      
+      <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 12px; padding: 20px; margin-top: 24px; border-left: 4px solid var(--success-green);">
+        <p style="margin: 0; font-weight: 600; color: #2E7D32;">💡 Ask these questions at design time—before you write code. A 30-minute threat model can save weeks of security remediation.</p>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Continue →</button>
+      </div>
+    </div>
+    
+    <!-- Slide 11: Threat Model Exercise -->
+    <div class="slide" id="slide11">
+      <h2>🏗️ Threat Model This Architecture</h2>
+      <p>Examine the system architecture below and classify each threat using the STRIDE framework.</p>
+      
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 24px 0; flex-wrap: wrap; padding: 24px; background: #f8f9fa; border-radius: 12px; border: 2px solid var(--medium-gray);">
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-align: center; min-width: 100px;">📱<br>Mobile App</div>
+        <div style="font-size: 1.5rem; color: #666;">→</div>
+        <div style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-align: center; min-width: 100px;">🌐<br>API Gateway</div>
+        <div style="font-size: 1.5rem; color: #666;">→</div>
+        <div style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-align: center; min-width: 100px;">🔐<br>Auth Service</div>
+        <div style="font-size: 1.5rem; color: #666;">→</div>
+        <div style="background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; text-align: center; min-width: 100px;">🗄️<br>Database</div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
+        <div style="color: #666; font-size: 0.85rem;">Also: API Gateway →</div>
+        <div style="background: linear-gradient(135deg, #fa709a, #fee140); color: white; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-align: center;">💳 Payment Service</div>
+        <div style="font-size: 1.2rem; color: #666;">→</div>
+        <div style="background: linear-gradient(135deg, #a18cd1, #fbc2eb); color: white; padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; text-align: center;">🏦 External Payment Provider</div>
+      </div>
+      
+      <div style="text-align: center; margin-bottom: 16px;">
+        <span style="font-size: 1.1rem; font-weight: 600; color: var(--dark-purple);">Correct: <span id="strideScore">0</span>/6</span>
+      </div>
+      
+      <div id="strideExercise" style="display: grid; gap: 16px;">
+        <div class="stride-threat-card" id="stride-threat-0" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">🔶 An attacker replays a stolen JWT to access the API</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(0, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(0, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(0, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(0, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(0, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(0, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-0" style="margin-top: 8px;"></div>
+        </div>
+        
+        <div class="stride-threat-card" id="stride-threat-1" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">🔶 A man-in-the-middle modifies payment amounts in transit</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(1, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(1, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(1, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(1, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(1, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(1, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-1" style="margin-top: 8px;"></div>
+        </div>
+        
+        <div class="stride-threat-card" id="stride-threat-2" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">🔶 A user claims they never made a purchase and requests a refund</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(2, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(2, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(2, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(2, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(2, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(2, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-2" style="margin-top: 8px;"></div>
+        </div>
+        
+        <div class="stride-threat-card" id="stride-threat-3" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">🔶 The API returns full credit card numbers in error messages</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(3, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(3, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(3, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(3, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(3, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(3, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-3" style="margin-top: 8px;"></div>
+        </div>
+        
+        <div class="stride-threat-card" id="stride-threat-4" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">🔶 An attacker floods the payment endpoint with requests</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(4, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(4, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(4, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(4, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(4, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(4, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-4" style="margin-top: 8px;"></div>
+        </div>
+        
+        <div class="stride-threat-card" id="stride-threat-5" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">🔶 A regular user modifies their JWT role claim from 'user' to 'admin'</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(5, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(5, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(5, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(5, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(5, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(5, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-5" style="margin-top: 8px;"></div>
+        </div>
+      </div>
+      
+      <div id="strideTip" style="display: none; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 12px; padding: 20px; margin-top: 24px; border-left: 4px solid var(--success-green);">
+        <p style="margin: 0; font-weight: 600; color: #2E7D32;">🛠️ In practice, use tools like Microsoft Threat Modeling Tool, OWASP Threat Dragon, or even a whiteboard session with your team to threat model your systems.</p>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="completeTraining()" id="strideContinue" style="display:none;">Complete Training →</button>
+      </div>
+    </div>
+    
+    <!-- Slide 12: Certificate -->
+    <div class="slide" id="slide12">
+      <div class="certificate">
+        <div class="trophy-icon">🏆</div>
+        <h1 style="color:var(--primary-purple); margin:24px 0;">Secure SDLC Expert!</h1>
+        <p style="font-size:1.25rem; color:var(--dark-purple); margin-bottom:32px;">
+          You've completed the Secure Development Lifecycle Training!
+        </p>
+        
+        <div style="margin:32px 0;">
+          <div>
+            <div style="font-size:2rem; font-weight:700; color:var(--primary-purple);" id="finalScore">100%</div>
+            <div style="color:#6c757d;">Final Score</div>
+          </div>
+        </div>
+        
+        <p style="color:var(--primary-purple); font-weight:600; font-size:1.125rem;">
+          Build Secure. Ship Secure. 👾
+        </p>
+        
+        <button class="btn" onclick="exitModule()" style="margin-top:24px;">Exit Training</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scorm-status" id="scormStatus">SCORM: Disconnected</div>
+
+  <script>
+  (function() {
+    // SCORM API wrapper
+    var scorm = {
+      version: null, api: null,
+      init: function() {
+        try {
+          this.api = this.getAPI();
+          if (this.api) {
+            this.version = this.getVersion();
+            var result = this.api.LMSInitialize ? this.api.LMSInitialize("") : this.api.Initialize("");
+            if (result == "true") {
+              this.setStatus("initialized");
+              this.setValue("cmi.core.lesson_status", "incomplete");
+              this.setValue("cmi.core.score.min", "0");
+              this.setValue("cmi.core.score.max", "100");
+              this.setValue("cmi.core.score.raw", "0");
+              this.commit();
+              return true;
+            }
+          }
+        } catch(e) { console.log("SCORM API not available - standalone mode"); }
+        return false;
+      },
+      getAPI: function() {
+        var api=null; if (window.parent && window.parent!=window) api=this.findAPI(window.parent);
+        if (!api && window.opener) api=this.findAPI(window.opener);
+        if (!api) api=this.findAPI(window);
+        return api;
+      },
+      findAPI: function(win) {
+        var i=0; while(!win.API && !win.API_1484_11 && win.parent && win.parent!=win && i<500){ i++; win=win.parent; }
+        return win.API || win.API_1484_11;
+      },
+      getVersion: function(){ if(this.api){ if(this.api.LMSInitialize) return "1.2"; if(this.api.Initialize) return "2004";} return null; },
+      getValue: function(e){ if(!this.api) return ""; if(this.version=="2004"){ var map={"cmi.core.lesson_status":"cmi.completion_status","cmi.core.score.raw":"cmi.score.raw","cmi.core.score.min":"cmi.score.min","cmi.core.score.max":"cmi.score.max","cmi.core.lesson_location":"cmi.location","cmi.core.session_time":"cmi.session_time","cmi.core.exit":"cmi.exit"}; return this.api.GetValue(map[e]||e); } return this.api.LMSGetValue(e); },
+      setValue: function(e,v){ if(!this.api) return false; if(this.version=="2004"){ var map={"cmi.core.lesson_status":"cmi.completion_status","cmi.core.score.raw":"cmi.score.raw","cmi.core.score.min":"cmi.score.min","cmi.core.score.max":"cmi.score.max","cmi.core.lesson_location":"cmi.location","cmi.core.session_time":"cmi.session_time","cmi.core.exit":"cmi.exit"}; return this.api.SetValue(map[e]||e,v); } return this.api.LMSSetValue(e,v); },
+      commit: function(){ if(!this.api) return false; return this.version=="1.2"? this.api.LMSCommit(""): this.api.Commit(""); },
+      finish: function(){ if(!this.api) return false; return this.version=="1.2"? this.api.LMSFinish(""): this.api.Terminate(""); },
+      setStatus: function(status){ var el=document.getElementById('scormStatus'); if(el){ el.textContent='SCORM: '+status; el.style.display='block'; } }
+    };
+    
+    // Game state management
+    let gameState = {
+      startTime: new Date(),
+      currentSlide: 1,
+      totalSlides: 12,
+      userScore: 0,
+      achievements: [],
+      ransomwareComplete: false,
+      lockComplete: false,
+      passwordComplete: false,
+      softwareComplete: false,
+      strideComplete: false,
+      scenariosCompleted: 0,
+      totalScenarios: 4,
+      choices: {}
+    };
+    
+    
+    // Achievement system
+    function showAchievement(icon, title, text) {
+      const popup = document.getElementById('achievementPopup');
+      document.getElementById('achievementIcon').textContent = icon;
+      document.getElementById('achievementTitle').textContent = title;
+      document.getElementById('achievementText').textContent = text;
+      
+      popup.classList.add('show');
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Code Review Decision Handler
+    function ransomwareDecision(choice) {
+      const ransomKey = `ransomware_decision`;
+      
+      const feedbackDiv = document.getElementById('ransomwareFeedback');
+      const buttons = document.querySelectorAll('#slide3 .decision-btn');
+      
+      // Save the choice
+      gameState.choices[ransomKey] = choice;
+      saveChoice(ransomKey, choice);
+      
+      feedbackDiv.innerHTML = '';
+      
+      // Clear all button styling and indicators first
+      buttons.forEach(btn => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.fontWeight = '';
+        btn.style.border = '';
+        btn.style.opacity = '';
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+        btn.style.position = '';
+        btn.style.zIndex = '';
+        // Remove any existing indicators
+        const existingIndicator = btn.querySelector('.action-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        const existingLabel = btn.querySelector('.action-label');
+        if (existingLabel) existingLabel.remove();
+      });
+      
+      // Find the clicked button
+      let clickedButton;
+      buttons.forEach(btn => {
+        if ((choice === 'wait' && btn.textContent.includes('Approve the PR')) ||
+            (choice === 'disconnect' && btn.textContent.includes('Request security changes')) ||
+            (choice === 'restart' && btn.textContent.includes('Approve with follow-up')) ||
+            (choice === 'antivirus' && btn.textContent.includes('Run SAST scan only'))) {
+          clickedButton = btn;
+        }
+      });
+      
+      // Make non-selected buttons slightly faded but still readable
+      buttons.forEach(btn => {
+        if (btn !== clickedButton) {
+          btn.style.opacity = '0.7';
+          btn.style.transform = 'scale(0.98)';
+        }
+      });
+      
+      switch(choice) {
+        case 'wait':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ NO! This PR has SQL injection, hardcoded credentials, missing input validation, and PII logging. Approving it would ship critical vulnerabilities to production!
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'disconnect':
+          feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ CORRECT! Request changes and block the merge until all security issues are fixed!<br><br>
+            <strong>Issues found in this PR:</strong><br>
+            • <strong>SQL Injection:</strong> String concatenation in SQL query — use parameterized queries instead<br>
+            • <strong>Hardcoded Secret:</strong> Database password in source code — use environment variables or a secrets manager<br>
+            • <strong>Missing Validation:</strong> No input validation on user-facing endpoint — add schema validation<br>
+            • <strong>PII Logging:</strong> Logging email, password, and SSN — never log sensitive user data<br><br>
+            Always request changes for security issues. Never approve with known vulnerabilities.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #2E7D32';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(76,175,80,0.4), 0 0 25px rgba(76,175,80,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '✅';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #4CAF50;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          showAchievement('🔍', 'Code Review Pro', 'Caught critical security vulnerabilities!');
+          gameState.ransomwareComplete = true;
+          document.getElementById('ransomwareContinue').style.display = 'inline-flex';
+          document.querySelectorAll('#slide3 .decision-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+          });
+          break;
+        case 'restart':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Partial credit — but follow-up tickets for security issues often get deprioritized. Block the merge and fix security issues before they reach production!
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'antivirus':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Partial credit — SAST is valuable but won't catch everything here. The hardcoded password and PII logging need human review. Request changes AND run SAST for comprehensive coverage.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+      }
+    }
+    
+    // Response simulation
+    
+    // Lock Decision Handler
+    function lockDecision(choice) {
+      const lockKey = `lock_decision`;
+      
+      const feedbackDiv = document.getElementById('lockFeedback');
+      const buttons = document.querySelectorAll('#slide5 .decision-btn');
+      
+      // Save the choice
+      gameState.choices[lockKey] = choice;
+      saveChoice(lockKey, choice);
+      
+      feedbackDiv.innerHTML = '';
+      
+      // Clear all button styling and indicators first
+      buttons.forEach(btn => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.fontWeight = '';
+        btn.style.border = '';
+        btn.style.opacity = '';
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+        btn.style.position = '';
+        btn.style.zIndex = '';
+        // Remove any existing indicators
+        const existingIndicator = btn.querySelector('.action-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        const existingLabel = btn.querySelector('.action-label');
+        if (existingLabel) existingLabel.remove();
+      });
+      
+      // Find the clicked button
+      let clickedButton;
+      buttons.forEach(btn => {
+        if ((choice === 'quick' && btn.textContent.includes("Approve immediately")) ||
+            (choice === 'lock' && btn.textContent.includes('Request security review')) ||
+            (choice === 'ask' && btn.textContent.includes('Ask the colleague')) ||
+            (choice === 'take' && btn.textContent.includes('Merge and monitor'))) {
+          clickedButton = btn;
+        }
+      });
+      
+      // Make non-selected buttons slightly faded but still readable
+      buttons.forEach(btn => {
+        if (btn !== clickedButton) {
+          btn.style.opacity = '0.7';
+          btn.style.transform = 'scale(0.98)';
+        }
+      });
+      
+      switch(choice) {
+        case 'quick':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ Never skip security reviews, even for urgent fixes! Urgency is a common social engineering tactic, and skipping security gates is how vulnerabilities reach production.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'lock':
+          feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ Excellent! Security review is non-negotiable, even for hotfixes. Expedite the review if truly urgent, but never skip it entirely.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #2E7D32';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(76,175,80,0.4), 0 0 25px rgba(76,175,80,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '✅';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #4CAF50;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          showAchievement('🔒', 'Security Gatekeeper', 'Enforced security review process!');
+          gameState.lockComplete = true;
+          document.getElementById('lockContinue').style.display = 'inline-flex';
+          document.querySelectorAll('#slide5 .decision-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+          });
+          break;
+        case 'ask':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Partial credit — understanding urgency is good, but it doesn't replace a security review. Request the security review AND ask about the urgency to help prioritize.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'take':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ Merging without security review and "monitoring" is reactive, not proactive. By the time you detect a vulnerability in production, attackers may have already exploited it.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+      }
+    }
+    
+    // Security Tool Exploration
+    if (!gameState.toolsExplored) gameState.toolsExplored = [];
+    
+    function testPassword(toolType) {
+      const display = document.getElementById('toolFindingDisplay');
+      const completeFeedback = document.getElementById('passwordCompleteFeedback');
+      
+      const findings = {
+        'SAST': {
+          color: '#1565C0',
+          icon: '🔍',
+          content: `<strong style="color:#1565C0;">SAST Finding Example:</strong><br>
+            <code style="background:#e3f2fd;padding:2px 6px;border-radius:4px;">HIGH: SQL Injection in api/users.js:42</code><br>
+            <span style="color:#666;">User input concatenated directly into SQL query. Use parameterized queries instead.</span><br><br>
+            <strong>When to use:</strong> On every commit via pre-commit hooks or CI pipeline. Catches vulnerabilities before code is deployed.`
+        },
+        'DAST': {
+          color: '#2E7D32',
+          icon: '🌐',
+          content: `<strong style="color:#2E7D32;">DAST Finding Example:</strong><br>
+            <code style="background:#e8f5e9;padding:2px 6px;border-radius:4px;">MEDIUM: Reflected XSS on /search?q=&lt;script&gt;</code><br>
+            <span style="color:#666;">User input reflected in page without encoding. Apply output encoding.</span><br><br>
+            <strong>When to use:</strong> Against running staging/QA environments. Tests the application as an attacker would see it.`
+        },
+        'SCA': {
+          color: '#E65100',
+          icon: '📦',
+          content: `<strong style="color:#E65100;">SCA Finding Example:</strong><br>
+            <code style="background:#fff3e0;padding:2px 6px;border-radius:4px;">CRITICAL: CVE-2024-1234 in lodash@4.17.20</code><br>
+            <span style="color:#666;">Known prototype pollution vulnerability. Upgrade to lodash@4.17.21+.</span><br><br>
+            <strong>When to use:</strong> On every dependency change and on a schedule. Monitors your supply chain continuously.`
+        },
+        'SECRET': {
+          color: '#C62828',
+          icon: '🔑',
+          content: `<strong style="color:#C62828;">Secret Scanning Finding Example:</strong><br>
+            <code style="background:#ffebee;padding:2px 6px;border-radius:4px;">CRITICAL: AWS Access Key found in config/settings.py:15</code><br>
+            <span style="color:#666;">Hardcoded credential detected. Rotate immediately and use environment variables.</span><br><br>
+            <strong>When to use:</strong> As a pre-commit hook to prevent secrets from ever entering the repository.`
+        }
+      };
+      
+      const finding = findings[toolType];
+      if (!finding) return;
+      
+      display.innerHTML = `<div style="padding:4px;">${finding.content}</div>`;
+      display.style.borderColor = finding.color;
+      
+      // Highlight the selected button
+      const toolButtons = document.querySelectorAll('[id^="tool-"]');
+      toolButtons.forEach(btn => {
+        btn.style.borderColor = '#ddd';
+        btn.style.background = '#fff';
+      });
+      const selectedBtn = document.getElementById('tool-' + toolType.toLowerCase());
+      if (selectedBtn) {
+        selectedBtn.style.borderColor = finding.color;
+        selectedBtn.style.background = `${finding.color}11`;
+      }
+      
+      // Track explored tools
+      if (!gameState.toolsExplored.includes(toolType)) {
+        gameState.toolsExplored.push(toolType);
+        const toolKey = `tool_${toolType}`;
+        gameState.choices[toolKey] = true;
+        saveChoice(toolKey, true);
+        
+        if (gameState.toolsExplored.length === 1) {
+          showAchievement('🔧', 'Tool Explorer', 'Explored your first security tool!');
+        }
+        
+        if (gameState.toolsExplored.length === 4 && !gameState.passwordComplete) {
+          completeFeedback.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ Excellent! You've explored all four security testing tool types!<br>
+            • <strong>SAST</strong> catches code-level bugs before deployment<br>
+            • <strong>DAST</strong> tests running applications like an attacker<br>
+            • <strong>SCA</strong> monitors your dependency supply chain<br>
+            • <strong>Secret Scanning</strong> prevents credential leaks
+          </div>`;
+          showAchievement('🧪', 'Security Testing Expert', 'Mastered all security testing tools!');
+          gameState.passwordComplete = true;
+          document.getElementById('passwordContinue').style.display = 'inline-flex';
+          
+          const passKey = 'password_strength_achieved';
+          gameState.choices[passKey] = true;
+          saveChoice(passKey, true);
+        }
+      }
+    }
+    
+    function showPasswordWarning() {}
+    function closePasswordWarningPopup() {}
+    function checkPasswordStrength() {}
+    
+    // AI Tool Decision Handler
+    function softwareDecision(choice) {
+      const softKey = `software_decision`;
+      
+      const feedbackDiv = document.getElementById('softwareFeedback');
+      const buttons = document.querySelectorAll('#slide9 .decision-btn');
+      
+      // Save the choice
+      gameState.choices[softKey] = choice;
+      saveChoice(softKey, choice);
+      
+      feedbackDiv.innerHTML = '';
+      
+      // Clear all button styling and indicators first
+      buttons.forEach(btn => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.fontWeight = '';
+        btn.style.border = '';
+        btn.style.opacity = '';
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+        btn.style.position = '';
+        btn.style.zIndex = '';
+        // Remove any existing indicators
+        const existingIndicator = btn.querySelector('.action-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        const existingLabel = btn.querySelector('.action-label');
+        if (existingLabel) existingLabel.remove();
+      });
+      
+      // Find the clicked button
+      let clickedButton;
+      buttons.forEach(btn => {
+        if ((choice === 'keep' && btn.textContent.includes('AI tools help productivity')) ||
+            (choice === 'remove' && btn.textContent.includes('Check with Security/IT')) ||
+            (choice === 'isolate' && btn.textContent.includes('personal account first')) ||
+            (choice === 'wait' && btn.textContent.includes('colleague if it'))) {
+          clickedButton = btn;
+        }
+      });
+      
+      // Make non-selected buttons slightly faded but still readable
+      buttons.forEach(btn => {
+        if (btn !== clickedButton) {
+          btn.style.opacity = '0.7';
+          btn.style.transform = 'scale(0.98)';
+        }
+      });
+      
+      switch(choice) {
+        case 'keep':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ NO! This tool requires OAuth access to all org repositories and sends code to external servers without a data processing agreement. Never install unapproved tools that access source code!
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'remove':
+          feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ Excellent! Always check with Security/IT before installing tools that access your code or repositories. They can evaluate data handling, permissions, and compliance requirements.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #2E7D32';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(76,175,80,0.4), 0 0 25px rgba(76,175,80,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '✅';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #4CAF50;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          showAchievement('🛡️', 'Tool Security Pro', 'Following proper tool approval process!');
+          gameState.softwareComplete = true;
+          document.getElementById('softwareContinue').style.display = 'inline-flex';
+          document.querySelectorAll('#slide9 .decision-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+          });
+          break;
+        case 'isolate':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Partial credit — using a personal account doesn't solve the problem. The tool still sends code to external servers, and connecting it to any work-related code is risky. Check with Security/IT first.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'wait':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ A colleague's recommendation is not a security assessment. Only your Security/IT team can properly evaluate tool permissions, data handling, and compliance requirements.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+      }
+    }
+    
+    // STRIDE Threat Modeling Exercise
+    const strideThreats = [
+      { description: 'An attacker replays a stolen JWT to access the API', answer: 'S' },
+      { description: 'A man-in-the-middle modifies payment amounts in transit', answer: 'T' },
+      { description: 'A user claims they never made a purchase and requests a refund', answer: 'R' },
+      { description: 'The API returns full credit card numbers in error messages', answer: 'I' },
+      { description: 'An attacker floods the payment endpoint with requests', answer: 'D' },
+      { description: 'A regular user modifies their JWT role claim from \'user\' to \'admin\'', answer: 'E' }
+    ];
+    const strideLabels = {
+      'S': 'Spoofing', 'T': 'Tampering', 'R': 'Repudiation',
+      'I': 'Information Disclosure', 'D': 'Denial of Service', 'E': 'Elevation of Privilege'
+    };
+    let strideCorrect = 0;
+    let strideShuffledThreats = null;
+
+    function shuffleArrayCopy(array) {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    function renderStrideThreats() {
+      if (strideShuffledThreats) return;
+      strideShuffledThreats = shuffleArrayCopy(strideThreats);
+      const container = document.getElementById('strideExercise');
+      container.innerHTML = strideShuffledThreats.map((threat, i) => `
+        <div class="stride-threat-card" id="stride-threat-${i}" style="background: #f8f9fa; border: 2px solid var(--medium-gray); border-radius: 12px; padding: 16px; transition: all 0.3s ease;">
+          <p style="margin-bottom: 12px; font-weight: 500;">\u{1F536} ${threat.description}</p>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(${i}, 'S')">S</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(${i}, 'T')">T</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(${i}, 'R')">R</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(${i}, 'I')">I</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(${i}, 'D')">D</button>
+            <button class="btn" style="padding: 8px 16px; font-size: 0.85rem;" onclick="classifyThreat(${i}, 'E')">E</button>
+          </div>
+          <div id="stride-feedback-${i}" style="margin-top: 8px;"></div>
+        </div>
+      `).join('');
+    }
+
+    function classifyThreat(index, choice) {
+      if (!strideShuffledThreats) return;
+      const threat = strideShuffledThreats[index];
+      const card = document.getElementById('stride-threat-' + index);
+      const feedback = document.getElementById('stride-feedback-' + index);
+      const choiceKey = 'stride_' + index;
+      
+      if (gameState.choices[choiceKey] === threat.answer) return;
+      
+      gameState.choices[choiceKey] = choice;
+      saveChoice(choiceKey, choice);
+      
+      const buttons = card.querySelectorAll('.btn');
+      
+      if (choice === threat.answer) {
+        card.style.borderColor = '#4CAF50';
+        card.style.background = '#e8f5e9';
+        feedback.innerHTML = '<span style="color: #2E7D32; font-weight: 600;">✅ Correct! This is ' + strideLabels[choice] + '.</span>';
+        buttons.forEach(btn => { btn.disabled = true; btn.style.opacity = '0.5'; });
+        buttons.forEach(btn => {
+          if (btn.textContent.trim() === choice) {
+            btn.style.opacity = '1';
+            btn.style.background = 'linear-gradient(135deg, #4CAF50, #66BB6A)';
+          }
+        });
+        
+        strideCorrect++;
+        document.getElementById('strideScore').textContent = strideCorrect;
+        
+        if (strideCorrect === 1) {
+          showAchievement('🎯', 'Threat Spotter!', 'Identified your first STRIDE threat!');
+        }
+        
+        if (strideCorrect === 6) {
+          gameState.strideComplete = true;
+          showAchievement('🏅', 'STRIDE Master!', 'Classified all 6 threats correctly!');
+          document.getElementById('strideTip').style.display = 'block';
+          document.getElementById('strideContinue').style.display = 'inline-flex';
+        }
+      } else {
+        feedback.innerHTML = '<span style="color: #f44336; font-weight: 600;">❌ Not quite. Think about what the attacker is trying to achieve. Try again!</span>';
+        card.style.borderColor = '#f44336';
+        setTimeout(() => { card.style.borderColor = 'var(--medium-gray)'; }, 1500);
+      }
+    }
+    
+    // Navigation
+    function updateProgress() {
+      document.getElementById('progressBar').style.width = (gameState.currentSlide / gameState.totalSlides) * 100 + '%';
+    }
+    
+    function _verifyCompletion() {
+      return gameState.ransomwareComplete && gameState.lockComplete && gameState.passwordComplete && gameState.softwareComplete && gameState.strideComplete;
+    }
+
+    let slideTimerInterval = null;
+    function showSlide(n) {
+      if (n === gameState.totalSlides && !_verifyCompletion()) return;
+      if (slideTimerInterval) {
+        clearInterval(slideTimerInterval);
+        slideTimerInterval = null;
+      }
+
+      document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+      document.getElementById('slide' + n).classList.add('active');
+      gameState.currentSlide = n;
+      updateProgress();
+      updateSCORM();
+
+      if (n === 11) renderStrideThreats();
+
+      const contentSlides = [2, 4, 6, 8, 10];
+      if (contentSlides.includes(n)) {
+        const slideEl = document.getElementById('slide' + n);
+        const nextBtn = slideEl.querySelector('.navigation .btn:not(.btn-secondary)');
+        if (nextBtn && !nextBtn.dataset.timerCompleted) {
+          if (!nextBtn.dataset.originalText) {
+            nextBtn.dataset.originalText = nextBtn.textContent;
+          }
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = '0.5';
+          let remaining = 15;
+          nextBtn.textContent = 'Next (' + remaining + 's) →';
+          slideTimerInterval = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) {
+              clearInterval(slideTimerInterval);
+              slideTimerInterval = null;
+              nextBtn.disabled = false;
+              nextBtn.style.opacity = '1';
+              nextBtn.textContent = nextBtn.dataset.originalText;
+              nextBtn.dataset.timerCompleted = 'true';
+            } else {
+              nextBtn.textContent = 'Next (' + remaining + 's) →';
+            }
+          }, 1000);
+        }
+      }
+      
+      // Notify parent frame if embedded
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'slideChange',
+          slide: n,
+          module: 'sdlc'
+        }, '*');
+      }
+      
+      // Restore choices when reaching decision slides
+      if ([3, 5, 7, 9, 11].includes(n)) {
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+    }
+    
+    function nextSlide() {
+      if (gameState.currentSlide < gameState.totalSlides) {
+        if (gameState.currentSlide + 1 === gameState.totalSlides && (!gameState.ransomwareComplete || !gameState.lockComplete || !gameState.passwordComplete || !gameState.softwareComplete || !gameState.strideComplete)) {
+          return;
+        }
+        showSlide(gameState.currentSlide + 1);
+      }
+    }
+    
+    function previousSlide() {
+      if (gameState.currentSlide > 1) {
+        showSlide(gameState.currentSlide - 1);
+      }
+    }
+    
+    function startTraining() {
+      showAchievement('🚀', 'Training Started!', 'Your secure development journey begins!');
+      nextSlide();
+    }
+    
+    // Completion
+    function completeTraining() {
+      if (!gameState.ransomwareComplete || !gameState.lockComplete || !gameState.passwordComplete || !gameState.softwareComplete || !gameState.strideComplete) {
+        console.warn('Training completion requires finishing all scenarios.');
+        return;
+      }
+
+      // Calculate completion score based on simulations only
+      let totalActivities = 5;
+      let completedActivities = 0;
+      
+      if (gameState.ransomwareComplete) completedActivities++;
+      if (gameState.lockComplete) completedActivities++;
+      if (gameState.passwordComplete) completedActivities++;
+      if (gameState.softwareComplete) completedActivities++;
+      if (gameState.strideComplete) completedActivities++;
+      
+      const finalScore = Math.round((completedActivities / totalActivities) * 100);
+      
+      document.getElementById('finalScore').textContent = finalScore + '%';
+      
+      // Notify parent frame if embedded
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'moduleComplete',
+          module: 'sdlc'
+        }, '*');
+      }
+      
+      // Update SCORM
+      scorm.setValue('cmi.core.score.raw', String(finalScore));
+      scorm.setValue('cmi.core.lesson_status', finalScore >= 80 ? 'passed' : 'completed');
+      scorm.commit();
+      
+      showSlide(12);
+      launchConfetti();
+      showAchievement('🏆', 'Training Complete!', 'You are now a Secure SDLC Expert!');
+    }
+    
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      container.style.display = 'block';
+      const colors = ['#7B2CBF', '#4CAF50', '#FFD700', '#FF6B6B', '#4ECDC4'];
+      
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.width = (Math.random() * 10 + 5) + 'px';
+          confetti.style.height = confetti.style.width;
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          confetti.style.animationDelay = Math.random() * 0.5 + 's';
+          container.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 4000);
+        }, i * 30);
+      }
+    }
+    
+    // Update SCORM
+    // Choice persistence functions
+    function saveChoice(slideId, choice) {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'choiceUpdate',
+          slideId: slideId,
+          choice: choice,
+          choicesData: {
+            choices: gameState.choices,
+            scenariosCompleted: gameState.scenariosCompleted || 0,
+            urlsChecked: gameState.urlsChecked || []
+          }
+        }, '*');
+      }
+    }
+    
+    function restoreChoices() {
+      const choicesData = gameState.choices || {};
+      
+      // Add restoring class to prevent flicker
+      const currentSlideElement = document.getElementById('slide' + gameState.currentSlide);
+      if (currentSlideElement) {
+        currentSlideElement.classList.add('restoring');
+        setTimeout(() => {
+          currentSlideElement.classList.remove('restoring');
+        }, 200);
+      }
+      
+      // Restore ransomware decision (slide 3)
+      if (choicesData['ransomware_decision'] && gameState.currentSlide === 3) {
+        const choice = choicesData['ransomware_decision'];
+        const feedbackDiv = document.getElementById('ransomwareFeedback');
+        const buttons = document.querySelectorAll('#slide3 .decision-btn');
+        
+        // Find the selected button
+        let selectedButton = null;
+        buttons.forEach(btn => {
+          if ((choice === 'wait' && btn.textContent.includes('Approve the PR')) ||
+              (choice === 'disconnect' && btn.textContent.includes('Request security changes')) ||
+              (choice === 'restart' && btn.textContent.includes('Approve with follow-up')) ||
+              (choice === 'antivirus' && btn.textContent.includes('Run SAST scan only'))) {
+            selectedButton = btn;
+          }
+        });
+        
+        if (selectedButton && feedbackDiv) {
+          // Apply visual restoration
+          buttons.forEach(btn => {
+            if (btn !== selectedButton) {
+              btn.style.opacity = '0.7';
+              btn.style.transform = 'scale(0.98)';
+            }
+          });
+          
+          const isCorrect = choice === 'disconnect';
+          const color = isCorrect ? '#4CAF50' : '#f44336';
+          const darkColor = isCorrect ? '#2E7D32' : '#C62828';
+          const icon = isCorrect ? '✅' : '❌';
+          
+          selectedButton.style.background = `linear-gradient(135deg, ${color}, ${darkColor})`;
+          selectedButton.style.color = 'white';
+          selectedButton.style.fontWeight = 'bold';
+          selectedButton.style.border = `4px solid ${darkColor}`;
+          selectedButton.style.transform = 'scale(1.12)';
+          selectedButton.style.boxShadow = `0 8px 30px ${color}66, 0 0 25px ${color}44`;
+          selectedButton.style.opacity = '1';
+          selectedButton.style.position = 'relative';
+          selectedButton.style.zIndex = '100';
+          
+          // Remove any existing indicators first
+          const existingIndicator = selectedButton.querySelector('.action-indicator');
+          if (existingIndicator) existingIndicator.remove();
+          const existingLabel = selectedButton.querySelector('.action-label');
+          if (existingLabel) existingLabel.remove();
+          
+          // Add icon and label
+          const iconEl = document.createElement('span');
+          iconEl.className = 'action-indicator';
+          iconEl.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+          iconEl.textContent = icon;
+          selectedButton.insertBefore(iconEl, selectedButton.firstChild);
+          
+          const label = document.createElement('div');
+          label.className = 'action-label';
+          label.style.cssText = `
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${color};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          `;
+          label.textContent = '🎯 YOUR CHOICE';
+          selectedButton.appendChild(label);
+          
+          // Show feedback
+          if (choice === 'disconnect') {
+            feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+              ✅ CORRECT! Request changes and block the merge until all security issues are fixed!<br><br>
+              <strong>Issues found in this PR:</strong><br>
+              • <strong>SQL Injection:</strong> Use parameterized queries instead of string concatenation<br>
+              • <strong>Hardcoded Secret:</strong> Use environment variables or a secrets manager<br>
+              • <strong>Missing Validation:</strong> Add schema validation on user-facing endpoints<br>
+              • <strong>PII Logging:</strong> Never log sensitive user data
+            </div>`;
+            gameState.ransomwareComplete = true;
+            // Show continue button
+            document.getElementById('ransomwareContinue').style.display = 'inline-flex';
+            // Disable all buttons after correct answer
+            buttons.forEach(btn => {
+              btn.disabled = true;
+              if (btn !== selectedButton) {
+                btn.style.opacity = '0.6';
+              }
+            });
+          } else {
+            feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+              ❌ Not the best approach for this code review. Try again!
+            </div>`;
+          }
+        }
+      }
+      
+      // Restore lock decision (slide 5)
+      if (choicesData['lock_decision'] && gameState.currentSlide === 5) {
+        const choice = choicesData['lock_decision'];
+        const feedbackDiv = document.getElementById('lockFeedback');
+        const buttons = document.querySelectorAll('#slide5 .decision-btn');
+        
+        // Find the selected button
+        let selectedButton = null;
+        buttons.forEach(btn => {
+          if ((choice === 'quick' && btn.textContent.includes("Approve immediately")) ||
+              (choice === 'lock' && btn.textContent.includes('Request security review')) ||
+              (choice === 'ask' && btn.textContent.includes('Ask the colleague')) ||
+              (choice === 'take' && btn.textContent.includes('Merge and monitor'))) {
+            selectedButton = btn;
+          }
+        });
+        
+        if (selectedButton && feedbackDiv) {
+          // Apply visual restoration
+          buttons.forEach(btn => {
+            if (btn !== selectedButton) {
+              btn.style.opacity = '0.7';
+              btn.style.transform = 'scale(0.98)';
+            }
+          });
+          
+          const isCorrect = choice === 'lock';
+          const color = isCorrect ? '#4CAF50' : '#f44336';
+          const darkColor = isCorrect ? '#2E7D32' : '#C62828';
+          const icon = isCorrect ? '✅' : '❌';
+          
+          selectedButton.style.background = `linear-gradient(135deg, ${color}, ${darkColor})`;
+          selectedButton.style.color = 'white';
+          selectedButton.style.fontWeight = 'bold';
+          selectedButton.style.border = `4px solid ${darkColor}`;
+          selectedButton.style.transform = 'scale(1.12)';
+          selectedButton.style.boxShadow = `0 8px 30px ${color}66, 0 0 25px ${color}44`;
+          selectedButton.style.opacity = '1';
+          selectedButton.style.position = 'relative';
+          selectedButton.style.zIndex = '100';
+          
+          // Remove any existing indicators first
+          const existingIndicator = selectedButton.querySelector('.action-indicator');
+          if (existingIndicator) existingIndicator.remove();
+          const existingLabel = selectedButton.querySelector('.action-label');
+          if (existingLabel) existingLabel.remove();
+          
+          // Add icon and label
+          const iconEl = document.createElement('span');
+          iconEl.className = 'action-indicator';
+          iconEl.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+          iconEl.textContent = icon;
+          selectedButton.insertBefore(iconEl, selectedButton.firstChild);
+          
+          const label = document.createElement('div');
+          label.className = 'action-label';
+          label.style.cssText = `
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${color};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          `;
+          label.textContent = '🎯 YOUR CHOICE';
+          selectedButton.appendChild(label);
+          
+          // Show feedback
+          if (choice === 'lock') {
+            feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+              ✅ Excellent! Security review is non-negotiable, even for hotfixes. Expedite the review if truly urgent, but never skip it entirely.
+            </div>`;
+            gameState.lockComplete = true;
+            // Show continue button
+            document.getElementById('lockContinue').style.display = 'inline-flex';
+            // Disable all buttons after correct answer
+            buttons.forEach(btn => {
+              btn.disabled = true;
+              if (btn !== selectedButton) {
+                btn.style.opacity = '0.6';
+              }
+            });
+          } else {
+            feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+              ❌ Not the right process. Try again!
+            </div>`;
+          }
+        }
+      }
+      
+      // Restore password strength achieved (slide 7)
+      if (choicesData['password_strength_achieved'] && gameState.currentSlide === 7) {
+        gameState.passwordComplete = true;
+        const completeFeedback = document.getElementById('passwordCompleteFeedback');
+        if (completeFeedback) {
+          completeFeedback.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ You've already explored all security testing tools!
+          </div>`;
+          document.getElementById('passwordContinue').style.display = 'inline-flex';
+        }
+      }
+      
+      // Restore software decision (slide 9)
+      if (choicesData['software_decision'] && gameState.currentSlide === 9) {
+        const choice = choicesData['software_decision'];
+        const feedbackDiv = document.getElementById('softwareFeedback');
+        const buttons = document.querySelectorAll('#slide9 .decision-btn');
+        
+        // Find the selected button
+        let selectedButton = null;
+        buttons.forEach(btn => {
+          if ((choice === 'keep' && btn.textContent.includes('AI tools help productivity')) ||
+              (choice === 'remove' && btn.textContent.includes('Check with Security/IT')) ||
+              (choice === 'isolate' && btn.textContent.includes('personal account first')) ||
+              (choice === 'wait' && btn.textContent.includes('colleague if it'))) {
+            selectedButton = btn;
+          }
+        });
+        
+        if (selectedButton && feedbackDiv) {
+          // Apply visual restoration
+          buttons.forEach(btn => {
+            if (btn !== selectedButton) {
+              btn.style.opacity = '0.7';
+              btn.style.transform = 'scale(0.98)';
+            }
+          });
+          
+          const isCorrect = choice === 'remove';
+          const color = isCorrect ? '#4CAF50' : '#f44336';
+          const darkColor = isCorrect ? '#2E7D32' : '#C62828';
+          const icon = isCorrect ? '✅' : '❌';
+          
+          selectedButton.style.background = `linear-gradient(135deg, ${color}, ${darkColor})`;
+          selectedButton.style.color = 'white';
+          selectedButton.style.fontWeight = 'bold';
+          selectedButton.style.border = `4px solid ${darkColor}`;
+          selectedButton.style.transform = 'scale(1.12)';
+          selectedButton.style.boxShadow = `0 8px 30px ${color}66, 0 0 25px ${color}44`;
+          selectedButton.style.opacity = '1';
+          selectedButton.style.position = 'relative';
+          selectedButton.style.zIndex = '100';
+          
+          // Remove any existing indicators first
+          const existingIndicator = selectedButton.querySelector('.action-indicator');
+          if (existingIndicator) existingIndicator.remove();
+          const existingLabel = selectedButton.querySelector('.action-label');
+          if (existingLabel) existingLabel.remove();
+          
+          // Add icon and label
+          const iconEl = document.createElement('span');
+          iconEl.className = 'action-indicator';
+          iconEl.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+          iconEl.textContent = icon;
+          selectedButton.insertBefore(iconEl, selectedButton.firstChild);
+          
+          const label = document.createElement('div');
+          label.className = 'action-label';
+          label.style.cssText = `
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${color};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          `;
+          label.textContent = '🎯 YOUR CHOICE';
+          selectedButton.appendChild(label);
+          
+          // Show feedback
+          if (choice === 'remove') {
+            feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+              ✅ Excellent! Always check with Security/IT before installing tools that access your code or repositories.
+            </div>`;
+            gameState.softwareComplete = true;
+            // Show continue button
+            document.getElementById('softwareContinue').style.display = 'inline-flex';
+            // Disable all buttons after correct answer
+            buttons.forEach(btn => {
+              btn.disabled = true;
+              if (btn !== selectedButton) {
+                btn.style.opacity = '0.6';
+              }
+            });
+          } else {
+            feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+              ❌ This puts your codebase at risk. Try again!
+            </div>`;
+          }
+        }
+      }
+      
+      // Restore STRIDE exercise (slide 11)
+      if (gameState.currentSlide === 11) {
+        if (!strideShuffledThreats) renderStrideThreats();
+        let restoredCorrect = 0;
+        
+        for (let i = 0; i < 6; i++) {
+          const key = 'stride_' + i;
+          if (choicesData[key] && strideShuffledThreats[i]) {
+            const choice = choicesData[key];
+            const threat = strideShuffledThreats[i];
+            const card = document.getElementById('stride-threat-' + i);
+            const feedback = document.getElementById('stride-feedback-' + i);
+            if (card && feedback) {
+              const buttons = card.querySelectorAll('.btn');
+              if (choice === threat.answer) {
+                card.style.borderColor = '#4CAF50';
+                card.style.background = '#e8f5e9';
+                feedback.innerHTML = '<span style="color: #2E7D32; font-weight: 600;">✅ Correct! This is ' + strideLabels[choice] + '.</span>';
+                buttons.forEach(btn => { btn.disabled = true; btn.style.opacity = '0.5'; });
+                buttons.forEach(btn => {
+                  if (btn.textContent.trim() === choice) {
+                    btn.style.opacity = '1';
+                    btn.style.background = 'linear-gradient(135deg, #4CAF50, #66BB6A)';
+                  }
+                });
+                restoredCorrect++;
+              }
+            }
+          }
+        }
+        
+        strideCorrect = restoredCorrect;
+        document.getElementById('strideScore').textContent = strideCorrect;
+        
+        if (strideCorrect === 6) {
+          gameState.strideComplete = true;
+          document.getElementById('strideTip').style.display = 'block';
+          document.getElementById('strideContinue').style.display = 'inline-flex';
+        }
+      }
+    }
+    
+    function updateSCORM() {
+      if (scorm.api) {
+        scorm.setValue('cmi.core.lesson_location', String(gameState.currentSlide));
+        scorm.setValue('cmi.suspend_data', JSON.stringify({
+          currentSlide: gameState.currentSlide,
+          achievements: gameState.achievements
+        }));
+        scorm.commit();
+      }
+    }
+    
+    // Listen for messages from parent frame
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'loadChoices') {
+        if (event.data.choices) {
+          gameState.choices = event.data.choices;
+          gameState.scenariosCompleted = event.data.scenariosCompleted || 0;
+          gameState.urlsChecked = event.data.urlsChecked || [];
+          
+          // Restore choices if on a decision slide
+          if ([3, 5, 7, 9, 11].includes(gameState.currentSlide)) {
+            setTimeout(restoreChoices, 50);
+          }
+        }
+      }
+    });
+    
+    // Initialize
+    window.onload = function() {
+      
+      // Check if SCORM should be disabled (when loaded in iframe)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('scorm') !== 'disabled') {
+        scorm.init();
+      }
+      
+      // Check if we should resume from a specific slide
+      const resumeSlide = urlParams.get('slide');
+      if (resumeSlide && !isNaN(resumeSlide) && parseInt(resumeSlide) >= 1 && parseInt(resumeSlide) <= gameState.totalSlides - 2) {
+        gameState.currentSlide = parseInt(resumeSlide);
+        // Show the correct slide immediately to avoid flash
+        showSlide(gameState.currentSlide);
+      }
+      
+      
+      // Restore choices if provided
+      const savedChoices = urlParams.get('choices');
+      if (savedChoices) {
+        try {
+          const choicesData = JSON.parse(decodeURIComponent(savedChoices));
+          if (choicesData.choices !== undefined) {
+            gameState.choices = choicesData.choices;
+            gameState.scenariosCompleted = choicesData.scenariosCompleted || 0;
+            // Don't restore urlsChecked here - it will be rebuilt from choices
+          } else {
+            gameState.choices = choicesData;
+          }
+          // Don't restore here - will be done when reaching the specific slide
+        } catch (e) {
+          console.warn('Failed to parse saved choices:', e);
+        }
+      }
+      
+      updateProgress();
+      updateSCORM();
+      
+      // If we're resuming on a slide with choices, restore them with minimal delay
+      if ((gameState.currentSlide === 3 || gameState.currentSlide === 5 || gameState.currentSlide === 7 || gameState.currentSlide === 9 || gameState.currentSlide === 11) && savedChoices) {
+        setTimeout(restoreChoices, 50);
+      }
+    };
+    
+    function exitModule() {
+      scorm.setValue('cmi.core.exit', '');
+      scorm.commit();
+      scorm.finish();
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'goHome' }, '*');
+      } else {
+        window.close();
+        setTimeout(() => { alert('You can now close this window.'); }, 100);
+      }
+    }
+
+    // Owl easter egg
+    function owlClick() {
+      const owl = document.querySelector('.grc-owl');
+      owl.style.animation = 'none';
+      setTimeout(() => {
+        owl.style.animation = 'bounce 2s ease-in-out infinite, spin 0.5s ease';
+      }, 10);
+      if (!gameState.achievements.includes('owl')) {
+        gameState.achievements.push('owl');
+        showAchievement('👾', 'Wise Discovery!', 'You found the easter egg!');
+      }
+      // If in iframe, send message to parent to go home
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'goHome' }, '*');
+      }
+    }
+
+    window.startTraining = startTraining;
+    window.nextSlide = nextSlide;
+    window.previousSlide = previousSlide;
+    window.completeTraining = function() {
+      if (!_verifyCompletion()) return;
+      completeTraining();
+    };
+    window.exitModule = exitModule;
+    window.owlClick = owlClick;
+    window.ransomwareDecision = ransomwareDecision;
+    window.lockDecision = lockDecision;
+    window.testPassword = testPassword;
+    window.softwareDecision = softwareDecision;
+    window.classifyThreat = classifyThreat;
+  })();
+  </script>
+</body>
+</html>

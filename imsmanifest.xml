@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="secure-developer-training" version="1.0"
+          xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+          xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
+                              http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd
+                              http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+  
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  
+  <organizations default="secure-developer-training-org">
+    <organization identifier="secure-developer-training-org">
+      <title>Secure Developer Training</title>
+      
+      <item identifier="module_combined" identifierref="resource_combined">
+        <title>Complete Secure Developer Training</title>
+      </item>
+    </organization>
+  </organizations>
+  
+  <resources>
+    <resource identifier="resource_combined" type="webcontent" adlcp:scormtype="sco" href="index.html">
+      <file href="index.html"/>
+      <file href="social-engineering-training/enhanced-interactive-training.html"/>
+      <file href="secrets-credential-management-training/enhanced-interactive-training.html"/>
+      <file href="supply-chain-dependency-security-training/enhanced-interactive-training.html"/>
+      <file href="secure-development-lifecycle-training/enhanced-interactive-training.html"/>
+      <file href="secure-data-handling-training/enhanced-interactive-training.html"/>
+      <file href="secure-coding-training/enhanced-interactive-training.html"/>
+      <file href="container-cloud-security-training/enhanced-interactive-training.html"/>
+      <file href="api-security-training/enhanced-interactive-training.html"/>
+      <file href="ai-llm-security-training/enhanced-interactive-training.html"/>
+    </resource>
+  </resources>
+</manifest>

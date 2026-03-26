@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRC Engineering: Container & Cloud Security Training</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    :root {
+      --primary-purple:#7B2CBF; --light-purple:#E0B0FF; --dark-purple:#4A1A6B;
+      --primary-teal:#06A77D; --light-teal:#B2F5E8; --dark-teal:#045F4A;
+      --primary-off-black:#17191E; --primary-white:#FFFFFF; --success-green:#4CAF50;
+      --warning-amber:#FF9800; --error-red:#F44336; --neutral-gray:#9E9E9E;
+      --light-gray:#F5F5F5; --medium-gray:#E0E0E0; --primary-gradient: linear-gradient(135deg, #7B2CBF 0%, #06A77D 100%);
+    }
+    
+    body { 
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+      background: #0a0e27;
+      color:var(--primary-off-black); 
+      min-height:100vh; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      padding:20px; 
+      line-height:1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Static gradient background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(123,44,191,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(123,44,191,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 20%, rgba(0,85,204,0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+    
+    .module-container { 
+      background:var(--primary-white); 
+      border-radius:16px; 
+      box-shadow:0 10px 40px rgba(0,8,77,.25); 
+      max-width:1100px; 
+      width:100%; 
+      overflow:hidden;
+    }
+    
+    .grc-header { 
+      background:var(--primary-gradient); 
+      padding:20px 32px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:space-between; 
+      color:var(--primary-white);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .grc-logo { 
+      display:flex; 
+      align-items:center; 
+      gap:16px; 
+      font-weight:700; 
+      font-size:20px;
+      z-index: 2;
+    }
+    
+    .grc-owl { 
+      width:48px; 
+      height:48px; 
+      background:var(--primary-white); 
+      border-radius:12px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      font-size:28px;
+      animation: bounce 2s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .grc-owl:hover {
+      animation: none;
+      transform: rotate(10deg) scale(1.1);
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    
+    .progress-bar { 
+      height:6px; 
+      background:var(--medium-gray); 
+      position:relative; 
+      overflow:hidden; 
+    }
+    
+    .progress-fill { 
+      height:100%; 
+      background:linear-gradient(90deg, var(--primary-purple), #06A77D); 
+      width:0%; 
+      transition:width .5s ease;
+      box-shadow: 0 0 20px rgba(123,44,191,0.5);
+    }
+    
+    .slide { 
+      padding:56px 48px; 
+      min-height:580px; 
+      display:none; 
+      animation:slideIn .4s ease;
+      position: relative;
+    }
+    
+    .slide.active { display:block; }
+    
+    @keyframes slideIn { 
+      from{ opacity:0; transform:translateX(30px); } 
+      to{ opacity:1; transform:translateX(0); } 
+    }
+    
+    h1 { 
+      color:var(--dark-purple); 
+      font-size:2.5rem; 
+      font-weight:800; 
+      margin-bottom:28px; 
+      text-align:center; 
+      line-height:1.2;
+      background: linear-gradient(135deg, var(--dark-purple), var(--primary-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    h2 { 
+      color:var(--dark-purple); 
+      font-size:2rem; 
+      font-weight:700; 
+      margin-bottom:24px;
+    }
+    
+    p { 
+      font-size:1.125rem; 
+      margin-bottom:20px; 
+      color:var(--primary-off-black); 
+    }
+    
+    /* Educational content styles */
+    .info-grid { 
+      display:grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap:20px; 
+      margin: 32px 0;
+    }
+    
+    .info-card { 
+      background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+      padding:24px; 
+      border-radius:12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(123,44,191,0.1);
+    }
+    
+    .info-card:hover {
+      box-shadow: 0 6px 20px rgba(123,44,191,0.15);
+      border-color: rgba(123,44,191,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .info-card-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    
+    .info-card h3 {
+      color: var(--primary-purple);
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .info-card p {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    /* Welcome slide specific card styling */
+    .welcome-card {
+      background: linear-gradient(135deg, #fff 0%, var(--light-purple) 100%);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(123,44,191,0.12);
+      border: 2px solid rgba(123,44,191,0.15);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .welcome-card:hover {
+      box-shadow: 0 12px 32px rgba(123,44,191,0.2);
+      border-color: rgba(123,44,191,0.3);
+      transform: translateY(-4px);
+    }
+    
+    .welcome-card .info-card-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .welcome-card h3 {
+      color: var(--dark-purple);
+      font-size: 20px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    
+    .welcome-card p {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.5;
+    }
+    
+    .visual-demo { 
+      background: linear-gradient(135deg, var(--light-purple) 0%, rgba(123,44,191,0.05) 100%);
+      padding:32px; 
+      border-radius:12px; 
+      margin:32px 0; 
+      border:2px solid rgba(123,44,191,.15);
+      box-shadow: 0 4px 12px rgba(123,44,191,0.1);
+    }
+    
+    /* Interactive decision buttons */
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    
+    .decision-btn {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .decision-btn:hover {
+      background: var(--light-purple);
+      border-color: var(--primary-purple);
+      box-shadow: 0 4px 12px rgba(123,44,191,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .decision-btn.selected {
+      background: var(--light-purple);
+      border-color: var(--primary-purple);
+      font-weight: 600;
+    }
+    
+    .decision-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    
+    /* Gamification elements */
+    .achievement {
+      position: fixed;
+      top: 20px;
+      right: -500px;
+      background: #fff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: right 0.5s ease;
+      z-index: 1000;
+    }
+    
+    .achievement.show {
+      right: 20px;
+    }
+    
+    .achievement-icon {
+      font-size: 32px;
+      animation: celebrate 0.5s ease;
+    }
+    
+    @keyframes celebrate {
+      0% { transform: scale(0) rotate(0); }
+      50% { transform: scale(1.2) rotate(180deg); }
+      100% { transform: scale(1) rotate(360deg); }
+    }
+    
+    /* Navigation */
+    .navigation { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      margin-top:40px; 
+      padding-top:32px; 
+      border-top:1px solid var(--medium-gray); 
+    }
+    
+    .btn { 
+      background:var(--primary-gradient); 
+      color:var(--primary-white); 
+      padding:14px 28px; 
+      border:none; 
+      border-radius:8px; 
+      font-size:1rem; 
+      font-weight:600; 
+      cursor:pointer; 
+      transition:all .3s ease; 
+      margin:8px; 
+      display:inline-flex; 
+      align-items:center; 
+      gap:8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.5s ease, height 0.5s ease;
+    }
+    
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn:hover { 
+      box-shadow:0 6px 20px rgba(123,44,191,.4); 
+      transform: translateY(-2px);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-secondary { 
+      background:transparent; 
+      color:var(--primary-purple); 
+      border:2px solid var(--primary-purple); 
+    }
+    
+    .btn-secondary:hover { 
+      background:var(--light-purple); 
+      border-color:var(--dark-purple); 
+      color:var(--dark-purple); 
+    }
+    
+    /* Enhanced certificate */
+    .certificate {
+      text-align: center;
+      padding: 48px;
+      background: linear-gradient(135deg, #fff 0%, var(--light-purple) 100%);
+      border-radius: 16px;
+      margin: 24px 0;
+      border: 3px solid var(--primary-purple);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .certificate::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(123,44,191,0.1), transparent);
+      animation: shine 3s linear infinite;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .certificate-seal {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      position: relative;
+      animation: sealRotate 20s linear infinite;
+    }
+    
+    @keyframes sealRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .trophy-icon {
+      font-size: 80px;
+      color: #FFD700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      animation: trophyGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes trophyGlow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    /* Confetti */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+      display: none;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--primary-purple);
+      animation: confettiFall 3s linear;
+    }
+    
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    
+    /* SCORM status indicator */
+    .scorm-status {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(23,25,30,.9);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: .75rem;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Feedback styles */
+    .feedback {
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      display: none;
+    }
+    
+    .feedback.show { 
+      display:block; 
+    }
+    
+    .feedback.correct {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid var(--success-green);
+    }
+    
+    .feedback.incorrect {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid var(--error-red);
+    }
+    
+    .feedback.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 2px solid #ffc107;
+    }
+
+    /* Dockerfile code block */
+    .code-block {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 24px;
+      border-radius: 8px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid #45475a;
+    }
+
+    .code-block .keyword { color: #cba6f7; }
+    .code-block .string { color: #a6e3a1; }
+    .code-block .comment { color: #6c7086; font-style: italic; }
+    .code-block .danger { color: #f38ba8; }
+
+    /* Clickable issue cards for Dockerfile review */
+    .issue-card {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 16px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .issue-card:hover {
+      border-color: var(--primary-purple);
+      box-shadow: 0 4px 12px rgba(123,44,191,0.15);
+      transform: translateY(-2px);
+    }
+
+    .issue-card.found {
+      border-color: var(--success-green);
+      background: #d4edda;
+      cursor: default;
+    }
+
+    .issue-card.found:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .issue-card h4 {
+      color: var(--dark-purple);
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .issue-card.found h4 {
+      color: #155724;
+    }
+
+    .issue-card .issue-feedback {
+      display: none;
+      font-size: 13px;
+      color: #155724;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .issue-card.found .issue-feedback {
+      display: block;
+    }
+
+    /* Config cards for cloud misconfig challenge */
+    .config-card {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 16px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .config-card:hover {
+      border-color: var(--primary-purple);
+      box-shadow: 0 4px 12px rgba(123,44,191,0.15);
+      transform: translateY(-2px);
+    }
+
+    .config-card.identified {
+      cursor: default;
+    }
+
+    .config-card.identified:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .config-card.identified.insecure {
+      border-color: var(--error-red);
+      background: #f8d7da;
+    }
+
+    .config-card.identified.safe {
+      border-color: var(--success-green);
+      background: #d4edda;
+    }
+
+    .config-card .config-feedback {
+      display: none;
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .config-card.identified .config-feedback {
+      display: block;
+    }
+
+    .config-card.identified.insecure .config-feedback { color: #721c24; }
+    .config-card.identified.safe .config-feedback { color: #155724; }
+
+    .counter-badge {
+      display: inline-block;
+      background: var(--primary-gradient);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary-purple);
+      margin: 28px 0 12px 0;
+    }
+    
+    /* Responsive */
+    @media (max-width:768px) {
+      .slide { padding:32px 24px; }
+      h1 { font-size:2rem; }
+      h2 { font-size:1.5rem; }
+      .decision-grid { grid-template-columns: 1fr; }
+      .code-block { font-size: 12px; padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Achievement Popup -->
+  <div class="achievement" id="achievementPopup" role="status" aria-live="polite">
+    <div class="achievement-icon" id="achievementIcon">🏆</div>
+    <div>
+      <div style="font-weight:700; color:var(--dark-purple);" id="achievementTitle">Achievement Unlocked!</div>
+      <div style="font-size:14px; color:#6c757d;" id="achievementText">You're making great progress!</div>
+    </div>
+  </div>
+
+  <!-- Confetti Container -->
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="module-container">
+    <div class="grc-header">
+      <div class="grc-logo">
+        <div class="grc-owl" onclick="owlClick()">👾</div>
+        <span>Container & Cloud Security</span>
+      </div>
+    </div>
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Training progress"><div class="progress-fill" id="progressBar"></div></div>
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide active" id="slide1">
+      <h1>🐳 Container & Cloud Security</h1>
+      <p style="text-align:center; font-size:1.25rem; margin-bottom:32px;">
+        Welcome, Security-Minded Developer! Learn to build, deploy, and run containers securely, and protect your cloud infrastructure from misconfigurations and attacks.
+      </p>
+      
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin:40px auto; max-width:800px;">
+        <div class="welcome-card" style="text-align:center;">
+          <span class="info-card-icon">🐳</span>
+          <h3>Container Hardening</h3>
+          <p>Build minimal, secure container images and run them with least privilege</p>
+        </div>
+        <div class="welcome-card" style="text-align:center;">
+          <span class="info-card-icon">☁️</span>
+          <h3>Cloud IAM</h3>
+          <p>Configure identity and access management to prevent privilege escalation</p>
+        </div>
+        <div class="welcome-card" style="text-align:center;">
+          <span class="info-card-icon">🏗️</span>
+          <h3>Infrastructure as Code</h3>
+          <p>Secure your Terraform, CloudFormation, and Kubernetes manifests</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <span></span>
+        <button class="btn" onclick="startTraining()">Begin Your Training →</button>
+      </div>
+    </div>
+
+    <!-- Slide 2: Container Security Fundamentals -->
+    <div class="slide" id="slide2">
+      <h2>🐳 Container Security Fundamentals</h2>
+      
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-card-icon">📦</span>
+          <h3>Minimal Base Images</h3>
+          <p>Use distroless or Alpine images. Every unnecessary package is an additional attack surface. Never use <code>latest</code> tag—pin specific versions or SHA256 digests.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🏗️</span>
+          <h3>Multi-Stage Builds</h3>
+          <p>Separate build dependencies from runtime. Your production image should only contain what's needed to run—no compilers, no build tools, no source code.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">👤</span>
+          <h3>Non-Root Execution</h3>
+          <p>Run containers as non-root users. Add <code>USER nonroot</code> to your Dockerfile. Drop all Linux capabilities and use seccomp profiles.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔍</span>
+          <h3>Image Scanning</h3>
+          <p>Scan images with Trivy, Snyk, or Grype before deployment. Block images with critical CVEs from reaching production.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔒</span>
+          <h3>Read-Only Filesystems</h3>
+          <p>Mount container filesystems as read-only. If an attacker gains access, they can't modify the container or persist malware.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🗝️</span>
+          <h3>Secrets in Containers</h3>
+          <p>Never bake secrets into images. Use Kubernetes Secrets, HashiCorp Vault, or cloud provider secret managers injected at runtime.</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 3: Dockerfile Security Review (Interactive) -->
+    <div class="slide" id="slide3">
+      <h2>🔍 Dockerfile Security Review</h2>
+      <p>Review the lines below. Some are <strong>security issues</strong>, others are <strong>good practices</strong>. Click each to identify them.</p>
+
+      <div class="visual-demo">
+        <div class="code-block" id="badDockerfile">
+<span class="keyword">FROM</span> <span class="danger">ubuntu:latest</span>
+<span class="keyword">COPY</span> . /app
+<span class="keyword">RUN</span> apt-get update && apt-get install -y <span class="danger">curl wget gcc python3</span>
+<span class="keyword">ENV</span> <span class="danger">DB_PASSWORD=SuperSecret123</span>
+<span class="keyword">RUN</span> <span class="danger">chmod 777 /app</span>
+<span class="keyword">EXPOSE</span> <span class="danger">22</span> 80 443
+<span class="keyword">CMD</span> [<span class="string">"python3"</span>, <span class="string">"/app/server.py"</span>]</div>
+      </div>
+
+      <div class="counter-badge" id="issueCounter">Found 0 of 6 security issues</div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:12px; margin-top:16px;">
+        <div class="issue-card" onclick="findIssue('latest')">
+          <h4>🚩 Using <code>ubuntu:latest</code></h4>
+          <div class="issue-feedback">Use a specific version like <code>python:3.12-slim</code> or a distroless image. <code>:latest</code> is unpredictable and may include vulnerabilities.</div>
+        </div>
+        <div class="issue-card" onclick="findIssue('packages')">
+          <h4>🚩 Installing unnecessary packages</h4>
+          <div class="issue-feedback">gcc, wget are not needed at runtime. Use multi-stage builds to separate build dependencies.</div>
+        </div>
+        <div class="issue-card" onclick="findIssue('secret')">
+          <h4>🚩 Hardcoded DB_PASSWORD</h4>
+          <div class="issue-feedback">Never put secrets in ENV directives. They're visible in image layers. Use runtime secret injection.</div>
+        </div>
+        <div class="issue-card" onclick="findIssue('chmod')">
+          <h4>🚩 chmod 777</h4>
+          <div class="issue-feedback">World-writable permissions are dangerous. Use specific permissions and run as non-root.</div>
+        </div>
+        <div class="issue-card" onclick="findIssue('ssh')">
+          <h4>🚩 Exposing port 22 (SSH)</h4>
+          <div class="issue-feedback">Never run SSH in containers. Use <code>kubectl exec</code> or container orchestrator tools for debugging.</div>
+        </div>
+        <div class="issue-card" onclick="findIssue('root')">
+          <h4>🚩 Running as root (no USER directive)</h4>
+          <div class="issue-feedback">Add <code>USER nonroot:nonroot</code> to run with least privilege.</div>
+        </div>
+        <div class="issue-card" onclick="checkDecoy('multistage')">
+          <h4>🔍 Using multi-stage build</h4>
+          <div class="issue-feedback" style="color:#155724;">✅ This is actually a good practice! Multi-stage builds separate build dependencies from runtime, reducing the attack surface. Not every line is a security issue.</div>
+        </div>
+        <div class="issue-card" onclick="checkDecoy('workdir')">
+          <h4>🔍 Specifying WORKDIR /app</h4>
+          <div class="issue-feedback" style="color:#155724;">✅ Setting a WORKDIR is a neutral/good practice. It avoids ambiguity about where commands run. Not a security issue.</div>
+        </div>
+        <div class="issue-card" onclick="checkDecoy('copyfirst')">
+          <h4>🔍 COPY requirements.txt first for layer caching</h4>
+          <div class="issue-feedback" style="color:#155724;">✅ This is a good practice! Copying dependency files first optimizes Docker layer caching and doesn't introduce security risks.</div>
+        </div>
+      </div>
+
+      <div id="fixedDockerfileSection" style="display:none; margin-top:24px;">
+        <p style="font-weight:700; color:var(--success-green);">✅ Here's the secure version:</p>
+        <div class="code-block">
+<span class="comment"># Stage 1: Build</span>
+<span class="keyword">FROM</span> <span class="string">python:3.12-slim</span> <span class="keyword">AS</span> builder
+<span class="keyword">COPY</span> requirements.txt .
+<span class="keyword">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="comment"># Stage 2: Runtime</span>
+<span class="keyword">FROM</span> <span class="string">gcr.io/distroless/python3-debian12</span>
+<span class="keyword">COPY</span> --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
+<span class="keyword">COPY</span> --chown=nonroot:nonroot ./app /app
+<span class="keyword">USER</span> <span class="string">nonroot:nonroot</span>
+<span class="keyword">EXPOSE</span> 8080
+<span class="keyword">CMD</span> [<span class="string">"/app/server.py"</span>]</div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="dockerContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 4: Kubernetes Security -->
+    <div class="slide" id="slide4">
+      <h2>⎈ Kubernetes Security Essentials</h2>
+      
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-card-icon">🛡️</span>
+          <h3>Pod Security</h3>
+          <p>Set <code>runAsNonRoot: true</code>, <code>readOnlyRootFilesystem: true</code>, and <code>allowPrivilegeEscalation: false</code> in your pod security context.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔑</span>
+          <h3>RBAC</h3>
+          <p>Apply least-privilege Role-Based Access Control. Use Roles (namespace-scoped) over ClusterRoles when possible. Audit service account permissions.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🌐</span>
+          <h3>Network Policies</h3>
+          <p>Deny all traffic by default, then allow only required ingress and egress. Prevent lateral movement between pods.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🗝️</span>
+          <h3>Secret Management</h3>
+          <p>Use external secret operators (e.g., External Secrets Operator) instead of base64-encoded Kubernetes Secrets stored in YAML files.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">📋</span>
+          <h3>Image Policies</h3>
+          <p>Only allow images from trusted registries. Use admission controllers (OPA Gatekeeper, Kyverno) to enforce image signing and scanning.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">📊</span>
+          <h3>Resource Limits</h3>
+          <p>Set CPU and memory limits on all containers. Without limits, a compromised pod can consume all node resources.</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 5: Cloud IAM & IaC Security -->
+    <div class="slide" id="slide5">
+      <h2>☁️ Cloud IAM & Infrastructure as Code Security</h2>
+
+      <div class="section-label">🔑 Cloud IAM</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-card-icon">🎯</span>
+          <h3>Least Privilege</h3>
+          <p>Start with zero permissions and add only what's needed. Use AWS IAM Access Analyzer or GCP Policy Analyzer to find unused permissions.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">⏳</span>
+          <h3>No Long-Lived Keys</h3>
+          <p>Use IAM roles and temporary credentials (STS AssumeRole, workload identity) instead of static access keys.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🧹</span>
+          <h3>Service Account Hygiene</h3>
+          <p>Each service gets its own service account with minimal permissions. Never share or reuse service accounts across services.</p>
+        </div>
+      </div>
+
+      <div class="section-label">🏗️ IaC Security</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-card-icon">🔍</span>
+          <h3>Scan Before Deploy</h3>
+          <p>Run Checkov, tfsec, or KICS against Terraform/CloudFormation before applying. Block deployments with critical findings.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🚫</span>
+          <h3>No Hardcoded Values</h3>
+          <p>Use variables and secret references in IaC. Never hardcode IPs, passwords, or account IDs in Terraform files.</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">📡</span>
+          <h3>Drift Detection</h3>
+          <p>Monitor for manual changes to infrastructure. Drift from your IaC definitions can introduce security gaps.</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 6: Cloud Misconfiguration Challenge (Interactive) -->
+    <div class="slide" id="slide6">
+      <h2>🎯 Spot the Cloud Misconfigurations</h2>
+      <p>Review these cloud resource configurations. Click each one to determine if it's <strong>secure</strong> or <strong>insecure</strong>.</p>
+
+      <div class="counter-badge" id="configCounter">Reviewed 0/6 configurations</div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:14px; margin-top:16px;">
+        <div class="config-card" id="configCard_s3_block">
+          <h4>📦 S3 Bucket</h4>
+          <p style="font-family:monospace; font-size:13px; margin:8px 0 0 0; color:#333;">PublicAccessBlockConfiguration: all enabled</p>
+          <div style="display:flex; gap:8px; margin-top:12px;" class="config-buttons">
+            <button onclick="classifyConfig('s3_block','secure')" style="flex:1; padding:6px 10px; border:2px solid #4CAF50; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#4CAF50;">✅ Secure</button>
+            <button onclick="classifyConfig('s3_block','insecure')" style="flex:1; padding:6px 10px; border:2px solid #f44336; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#f44336;">🚨 Insecure</button>
+          </div>
+          <div class="config-feedback"></div>
+        </div>
+        <div class="config-card" id="configCard_s3_public">
+          <h4>📦 S3 Bucket</h4>
+          <p style="font-family:monospace; font-size:13px; margin:8px 0 0 0; color:#333;">ACL: public-read</p>
+          <div style="display:flex; gap:8px; margin-top:12px;" class="config-buttons">
+            <button onclick="classifyConfig('s3_public','secure')" style="flex:1; padding:6px 10px; border:2px solid #4CAF50; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#4CAF50;">✅ Secure</button>
+            <button onclick="classifyConfig('s3_public','insecure')" style="flex:1; padding:6px 10px; border:2px solid #f44336; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#f44336;">🚨 Insecure</button>
+          </div>
+          <div class="config-feedback"></div>
+        </div>
+        <div class="config-card" id="configCard_rds">
+          <h4>🗄️ RDS Instance</h4>
+          <p style="font-family:monospace; font-size:13px; margin:8px 0 0 0; color:#333;">StorageEncrypted: true, MultiAZ: true</p>
+          <div style="display:flex; gap:8px; margin-top:12px;" class="config-buttons">
+            <button onclick="classifyConfig('rds','secure')" style="flex:1; padding:6px 10px; border:2px solid #4CAF50; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#4CAF50;">✅ Secure</button>
+            <button onclick="classifyConfig('rds','insecure')" style="flex:1; padding:6px 10px; border:2px solid #f44336; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#f44336;">🚨 Insecure</button>
+          </div>
+          <div class="config-feedback"></div>
+        </div>
+        <div class="config-card" id="configCard_sg_ssh">
+          <h4>🔥 Security Group</h4>
+          <p style="font-family:monospace; font-size:13px; margin:8px 0 0 0; color:#333;">Ingress: 0.0.0.0/0 port 22</p>
+          <div style="display:flex; gap:8px; margin-top:12px;" class="config-buttons">
+            <button onclick="classifyConfig('sg_ssh','secure')" style="flex:1; padding:6px 10px; border:2px solid #4CAF50; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#4CAF50;">✅ Secure</button>
+            <button onclick="classifyConfig('sg_ssh','insecure')" style="flex:1; padding:6px 10px; border:2px solid #f44336; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#f44336;">🚨 Insecure</button>
+          </div>
+          <div class="config-feedback"></div>
+        </div>
+        <div class="config-card" id="configCard_iam_star">
+          <h4>🔑 IAM Policy</h4>
+          <p style="font-family:monospace; font-size:13px; margin:8px 0 0 0; color:#333;">Effect: Allow, Action: *, Resource: *</p>
+          <div style="display:flex; gap:8px; margin-top:12px;" class="config-buttons">
+            <button onclick="classifyConfig('iam_star','secure')" style="flex:1; padding:6px 10px; border:2px solid #4CAF50; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#4CAF50;">✅ Secure</button>
+            <button onclick="classifyConfig('iam_star','insecure')" style="flex:1; padding:6px 10px; border:2px solid #f44336; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#f44336;">🚨 Insecure</button>
+          </div>
+          <div class="config-feedback"></div>
+        </div>
+        <div class="config-card" id="configCard_cloudtrail">
+          <h4>📝 CloudTrail</h4>
+          <p style="font-family:monospace; font-size:13px; margin:8px 0 0 0; color:#333;">IsLogging: true, IsMultiRegion: true</p>
+          <div style="display:flex; gap:8px; margin-top:12px;" class="config-buttons">
+            <button onclick="classifyConfig('cloudtrail','secure')" style="flex:1; padding:6px 10px; border:2px solid #4CAF50; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#4CAF50;">✅ Secure</button>
+            <button onclick="classifyConfig('cloudtrail','insecure')" style="flex:1; padding:6px 10px; border:2px solid #f44336; border-radius:6px; cursor:pointer; font-weight:600; font-size:12px; background:transparent; color:#f44336;">🚨 Insecure</button>
+          </div>
+          <div class="config-feedback"></div>
+        </div>
+      </div>
+
+      <div id="configResultSection" style="display:none; margin-top:24px;">
+        <div class="visual-demo">
+          <p><strong>Great work!</strong> You've identified all configurations. Remember: always block public access by default, restrict network rules to the minimum required, apply least-privilege IAM, and enable logging everywhere.</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="configContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 7: Knowledge Check -->
+    <div class="slide" id="slide7">
+      <h2>🧠 Knowledge Check</h2>
+      <p style="text-align:center; margin-bottom:24px;">Test your understanding of container and cloud security:</p>
+      
+      <div id="scenarioContainer" style="margin-top:32px;">
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="completeTraining()" id="completeBtn" style="display:none;">Complete Training →</button>
+      </div>
+    </div>
+
+    <!-- Slide 8: Certificate -->
+    <div class="slide" id="slide8">
+      <div class="certificate">
+        <div class="certificate-seal">
+          <div class="trophy-icon">🏆</div>
+        </div>
+        <h1 style="color:var(--dark-purple); margin-bottom:16px;">Container & Cloud Security Expert!</h1>
+        <p style="font-size:1.25rem; margin-bottom:8px;">You've successfully completed</p>
+        <p style="font-size:1.5rem; font-weight:700; color:var(--primary-purple); margin-bottom:24px;">Container & Cloud Security Training</p>
+        
+        <div style="margin:32px 0; text-align:center;">
+          <div>
+            <div style="font-size:2rem; font-weight:800; color:var(--success-green);" id="finalScore">100%</div>
+            <div style="color:#6c757d;">Score</div>
+          </div>
+        </div>
+        
+        <p style="color:var(--primary-purple); font-weight:700; font-size:1.125rem; margin:24px 0;">
+          Stay Vigilant. Stay Secure. 👾
+        </p>
+        
+        <button class="btn" onclick="exitModule()">Exit Training</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scorm-status" id="scormStatus">SCORM: Disconnected</div>
+
+  <script>
+  (function() {
+    // SCORM API wrapper
+    var scorm = {
+      version: null, api: null,
+      init: function() {
+        try {
+          this.api = this.getAPI();
+          if (this.api) {
+            this.version = this.getVersion();
+            var result = this.api.LMSInitialize ? this.api.LMSInitialize("") : this.api.Initialize("");
+            if (result == "true") {
+              this.setStatus("initialized");
+              this.setValue("cmi.core.lesson_status", "incomplete");
+              this.setValue("cmi.core.score.min", "0");
+              this.setValue("cmi.core.score.max", "100");
+              this.setValue("cmi.core.score.raw", "0");
+              this.commit();
+              return true;
+            }
+          }
+        } catch(e) { console.log("SCORM API not available - standalone mode"); }
+        return false;
+      },
+      getAPI: function() {
+        var api=null; 
+        if (window.parent && window.parent!=window) api=this.findAPI(window.parent);
+        if (!api && window.opener) api=this.findAPI(window.opener);
+        if (!api) api=this.findAPI(window);
+        return api;
+      },
+      findAPI: function(win) {
+        var i=0; 
+        while(!win.API && !win.API_1484_11 && win.parent && win.parent!=win && i<500){ 
+          i++; 
+          win=win.parent; 
+        }
+        return win.API || win.API_1484_11;
+      },
+      getVersion: function(){ 
+        if(this.api){ 
+          if(this.api.LMSInitialize) return "1.2"; 
+          if(this.api.Initialize) return "2004";
+        } 
+        return null; 
+      },
+      getValue: function(e){
+        if(!this.api) return "";
+        if(this.version=="2004"){
+          var map={"cmi.core.lesson_status":"cmi.completion_status","cmi.core.score.raw":"cmi.score.raw","cmi.core.score.min":"cmi.score.min","cmi.core.score.max":"cmi.score.max","cmi.core.lesson_location":"cmi.location","cmi.core.session_time":"cmi.session_time","cmi.core.exit":"cmi.exit"};
+          return this.api.GetValue(map[e]||e);
+        }
+        return this.api.LMSGetValue(e);
+      },
+      setValue: function(e,v){
+        if(!this.api) return false;
+        if(this.version=="2004"){
+          var map={"cmi.core.lesson_status":"cmi.completion_status","cmi.core.score.raw":"cmi.score.raw","cmi.core.score.min":"cmi.score.min","cmi.core.score.max":"cmi.score.max","cmi.core.lesson_location":"cmi.location","cmi.core.session_time":"cmi.session_time","cmi.core.exit":"cmi.exit"};
+          return this.api.SetValue(map[e]||e,v);
+        }
+        return this.api.LMSSetValue(e,v);
+      },
+      commit: function(){ 
+        if(!this.api) return false; 
+        return this.version=="1.2"? this.api.LMSCommit(""): this.api.Commit(""); 
+      },
+      finish: function(){ 
+        if(!this.api) return false; 
+        return this.version=="1.2"? this.api.LMSFinish(""): this.api.Terminate(""); 
+      },
+      setStatus: function(status){ 
+        var el=document.getElementById('scormStatus'); 
+        if(el){ 
+          el.textContent='SCORM: '+status; 
+          el.style.display='block'; 
+        } 
+      }
+    };
+
+    // Game state management
+    let gameState = {
+      startTime: new Date(),
+      currentSlide: 1,
+      totalSlides: 8,
+      userScore: 0,
+      achievements: [],
+      quizPassed: false,
+      correctAnswers: 0,
+      choices: {},
+      completedScenarios: {},
+      dockerfileIssues: {},
+      dockerfileIssuesFound: 0,
+      configChecks: {},
+      configChecksFound: 0,
+      scenariosCompleted: 0
+    };
+
+    const totalScenarios = 3;
+    const totalDockerIssues = 6;
+    const totalConfigs = 6;
+
+    const configDefinitions = {
+      s3_block:  { safe: true, feedback: 'Public access is fully blocked. This is the secure default.' },
+      s3_public: { safe: false, feedback: 'Public S3 buckets have caused massive data breaches. Block all public access unless explicitly required.' },
+      rds:       { safe: true, feedback: 'Encryption at rest and multi-AZ for availability are both best practices.' },
+      sg_ssh:    { safe: false, feedback: 'SSH open to the world. Restrict to specific IPs or use SSM Session Manager instead.' },
+      iam_star:  { safe: false, feedback: 'God-mode IAM policy. This is the #1 cloud security anti-pattern. Use least-privilege.' },
+      cloudtrail:{ safe: true, feedback: 'Multi-region logging ensures visibility across all regions.' }
+    };
+
+    const knowledgeScenarios = [
+      {
+        title: 'Container Image Choice',
+        description: 'Your team needs a base image for a Python API. Which is the most secure choice?',
+        options: [
+          { text: 'python:3.12-slim', feedback: 'Slim images have a minimal footprint with fewer vulnerabilities. Pin the exact version.', correct: true },
+          { text: 'python:latest', feedback: 'Using :latest means unpredictable versions. Specify exact versions.', correct: false },
+          { text: 'ubuntu:22.04 with Python installed manually', feedback: 'Full OS images have a massive attack surface. Use language-specific slim or distroless images.', correct: false }
+        ]
+      },
+      {
+        title: 'Kubernetes Secret',
+        description: 'How should production database credentials be provided to pods?',
+        options: [
+          { text: 'In a ConfigMap', feedback: 'ConfigMaps are not encrypted. Credentials should never be in ConfigMaps.', correct: false },
+          { text: 'Hardcoded in the deployment YAML', feedback: 'YAML files are stored in git. Secrets in git are secrets leaked.', correct: false },
+          { text: 'As environment variables from an external secrets manager', feedback: 'Use External Secrets Operator or similar to inject secrets from Vault/AWS SM at runtime.', correct: true }
+        ]
+      },
+      {
+        title: 'Cloud IAM',
+        description: 'A developer asks for AdministratorAccess in AWS to debug a Lambda function. What should you do?',
+        options: [
+          { text: 'Grant it temporarily', feedback: 'Even temporary admin access violates least privilege and creates risk if credentials are compromised.', correct: false },
+          { text: 'Grant only the specific Lambda, CloudWatch Logs, and X-Ray permissions needed', feedback: 'Apply least-privilege: only the permissions needed for the specific task.', correct: true },
+          { text: 'Add them to the admin group with MFA required', feedback: 'MFA helps but doesn\'t fix the over-permissioning. Least privilege is the principle.', correct: false }
+        ]
+      }
+    ];
+    
+    // Initialize
+    window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('scorm') !== 'disabled') {
+        scorm.init();
+      }
+      
+      const savedChoices = urlParams.get('choices');
+      if (savedChoices) {
+        try {
+          const choicesData = JSON.parse(decodeURIComponent(savedChoices));
+          if (choicesData.choices !== undefined) {
+            gameState.choices = choicesData.choices;
+            gameState.completedScenarios = choicesData.completedScenarios || {};
+            gameState.dockerfileIssues = choicesData.dockerfileIssues || {};
+            gameState.configChecks = choicesData.configChecks || {};
+          } else {
+            gameState.choices = choicesData;
+          }
+        } catch (e) {
+          console.warn('Failed to parse saved choices:', e);
+        }
+      }
+      
+      const resumeSlide = urlParams.get('slide');
+      if (resumeSlide && !isNaN(resumeSlide) && parseInt(resumeSlide) >= 1 && parseInt(resumeSlide) <= gameState.totalSlides - 2) {
+        gameState.currentSlide = parseInt(resumeSlide);
+        showSlide(gameState.currentSlide);
+      }
+      
+      updateProgress();
+      updateSCORM();
+      
+      if (gameState.currentSlide === 3 && savedChoices) {
+        setTimeout(restoreChoices, 50);
+      }
+      if (gameState.currentSlide === 6 && savedChoices) {
+        setTimeout(restoreChoices, 50);
+      }
+      if (gameState.currentSlide === 7) {
+        loadScenarios();
+        if (savedChoices) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+    };
+    
+    // Owl easter egg
+    function owlClick() {
+      const owl = document.querySelector('.grc-owl');
+      owl.style.animation = 'none';
+      setTimeout(() => {
+        owl.style.animation = 'bounce 2s ease-in-out infinite, spin 0.5s ease';
+      }, 10);
+      if (!gameState.achievements.includes('owl')) {
+        gameState.achievements.push('owl');
+        showAchievement('👾', 'Wise Discovery!', 'You found the easter egg!');
+      }
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'goHome' }, '*');
+      }
+    }
+    
+    // Achievement system
+    function showAchievement(icon, title, text) {
+      const popup = document.getElementById('achievementPopup');
+      document.getElementById('achievementIcon').textContent = icon;
+      document.getElementById('achievementTitle').textContent = title;
+      document.getElementById('achievementText').textContent = text;
+      
+      popup.classList.add('show');
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 3000);
+    }
+
+    // --- Slide 3: Dockerfile Security Review ---
+    function findIssue(issueId) {
+      if (gameState.dockerfileIssues[issueId]) return;
+
+      gameState.dockerfileIssues[issueId] = true;
+      gameState.dockerfileIssuesFound = Object.keys(gameState.dockerfileIssues).length;
+
+      const cards = document.querySelectorAll('#slide3 .issue-card');
+      const issueMap = ['latest', 'packages', 'secret', 'chmod', 'ssh', 'root'];
+      const idx = issueMap.indexOf(issueId);
+      if (idx >= 0 && cards[idx]) {
+        cards[idx].classList.add('found');
+      }
+
+      document.getElementById('issueCounter').textContent = 'Found ' + gameState.dockerfileIssuesFound + ' of 6 security issues (and avoided the decoys!)';
+
+      gameState.choices['dockerfile_' + issueId] = true;
+      saveChoice('dockerfile_' + issueId, true);
+
+      if (gameState.dockerfileIssuesFound === totalDockerIssues) {
+        document.getElementById('fixedDockerfileSection').style.display = 'block';
+        document.getElementById('dockerContinue').style.display = 'inline-flex';
+        showAchievement('🐳', 'Dockerfile Auditor!', 'You found all 6 security issues!');
+      }
+    }
+
+    // --- Slide 6: Cloud Misconfiguration Challenge ---
+    function classifyConfig(configId, userChoice) {
+      if (gameState.configChecks[configId]) return;
+
+      const def = configDefinitions[configId];
+      if (!def) return;
+
+      const card = document.getElementById('configCard_' + configId);
+      if (!card) return;
+
+      const isCorrect = (userChoice === 'secure' && def.safe) || (userChoice === 'insecure' && !def.safe);
+      const feedbackDiv = card.querySelector('.config-feedback');
+      const buttonsDiv = card.querySelector('.config-buttons');
+
+      if (isCorrect) {
+        gameState.configChecks[configId] = true;
+        gameState.configChecksFound = Object.keys(gameState.configChecks).length;
+
+        card.classList.add('identified');
+        card.classList.add(def.safe ? 'safe' : 'insecure');
+        if (buttonsDiv) buttonsDiv.style.display = 'none';
+        if (feedbackDiv) {
+          feedbackDiv.textContent = (def.safe ? '✅ ' : '🚨 ') + def.feedback;
+          feedbackDiv.style.display = 'block';
+        }
+
+        gameState.choices['config_' + configId] = userChoice;
+        saveChoice('config_' + configId, userChoice);
+
+        document.getElementById('configCounter').textContent = 'Reviewed ' + gameState.configChecksFound + '/6 configurations';
+
+        if (gameState.configChecksFound === totalConfigs) {
+          document.getElementById('configResultSection').style.display = 'block';
+          document.getElementById('configContinue').style.display = 'inline-flex';
+          showAchievement('☁️', 'Cloud Inspector!', 'You reviewed all configurations!');
+        }
+      } else {
+        if (feedbackDiv) {
+          feedbackDiv.textContent = '⚠️ Not quite. Think about whether this configuration follows security best practices. Try again!';
+          feedbackDiv.style.display = 'block';
+          feedbackDiv.style.background = '#fff3cd';
+          feedbackDiv.style.color = '#856404';
+          feedbackDiv.style.padding = '8px 12px';
+          feedbackDiv.style.borderRadius = '6px';
+          feedbackDiv.style.marginTop = '8px';
+        }
+      }
+    }
+
+    function checkDecoy(decoyId) {
+      const decoyMap = { multistage: 6, workdir: 7, copyfirst: 8 };
+      const idx = decoyMap[decoyId];
+      const cards = document.querySelectorAll('#slide3 .issue-card');
+      if (idx !== undefined && cards[idx] && !cards[idx].classList.contains('found')) {
+        cards[idx].classList.add('found');
+        cards[idx].style.borderColor = '#2196F3';
+        cards[idx].style.background = '#e3f2fd';
+      }
+    }
+
+    // --- Slide 7: Knowledge Check ---
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function loadScenarios() {
+      const container = document.getElementById('scenarioContainer');
+      container.innerHTML = '';
+      
+      knowledgeScenarios.forEach((scenario, index) => {
+        shuffleArray(scenario.options);
+        const scenarioDiv = document.createElement('div');
+        scenarioDiv.style.cssText = 'background:#f8f9fa;padding:24px;border-radius:12px;margin-bottom:24px;border:2px solid #dee2e6;';
+        
+        const icons = ['🐳', '⎈', '☁️'];
+        
+        scenarioDiv.innerHTML = `
+          <h3 style="color:var(--dark-purple);margin-bottom:16px;">${icons[index]} Question ${index + 1}: ${scenario.title}</h3>
+          <p style="margin-bottom:20px;font-style:italic;">${scenario.description}</p>
+          <div id="scenario${index}Options" style="display:grid;gap:12px;">
+            ${scenario.options.map((opt, i) => 
+              `<button class="btn btn-secondary" style="text-align:left;padding:16px;" onclick="scenarioResponse(${index}, ${i})">${opt.text}</button>`
+            ).join('')}
+          </div>
+          <div id="scenario${index}Feedback" style="margin-top:16px;"></div>
+        `;
+        
+        container.appendChild(scenarioDiv);
+      });
+    }
+    
+    function scenarioResponse(scenarioIndex, optionIndex) {
+      const choiceKey = `scenario_${scenarioIndex}`;
+      
+      if (gameState.completedScenarios[choiceKey]) return;
+      
+      gameState.choices[choiceKey] = optionIndex;
+      saveChoice(choiceKey, optionIndex);
+      
+      const scenario = knowledgeScenarios[scenarioIndex];
+      const option = scenario.options[optionIndex];
+      const feedbackDiv = document.getElementById(`scenario${scenarioIndex}Feedback`);
+      const buttons = document.querySelectorAll(`#scenario${scenarioIndex}Options button`);
+      
+      buttons.forEach(btn => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.fontWeight = '';
+        btn.style.border = '';
+        btn.style.opacity = '';
+      });
+      
+      buttons[optionIndex].style.background = option.correct ? 'linear-gradient(135deg, #4CAF50, #45a049)' : 'linear-gradient(135deg, #ff9800, #f57c00)';
+      buttons[optionIndex].style.color = 'white';
+      buttons[optionIndex].style.fontWeight = '600';
+      buttons[optionIndex].style.border = option.correct ? '2px solid #4CAF50' : '2px solid #ff9800';
+      
+      if (option.correct) {
+        feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+          ✅ ${option.feedback}
+        </div>`;
+        gameState.completedScenarios[choiceKey] = true;
+        
+        buttons.forEach(btn => {
+          btn.disabled = true;
+          btn.classList.add('disabled');
+        });
+        
+        gameState.scenariosCompleted++;
+        
+        if (gameState.scenariosCompleted === totalScenarios) {
+          document.getElementById('completeBtn').style.display = 'inline-flex';
+          showAchievement('🎯', 'Knowledge Master!', 'Completed all container & cloud security scenarios!');
+        }
+      } else {
+        feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+          ❌ ${option.feedback} Try again!
+        </div>`;
+        buttons[optionIndex].style.opacity = '0.7';
+      }
+    }
+    
+    // Navigation
+    function updateProgress() {
+      document.getElementById('progressBar').style.width = (gameState.currentSlide / gameState.totalSlides) * 100 + '%';
+    }
+    
+    const contentSlides = [2, 4, 5];
+    const MINIMUM_TIME_SECONDS = 15;
+    let slideTimer = null;
+
+    function _verifyCompletion() {
+      return gameState.scenariosCompleted >= totalScenarios && gameState.dockerfileIssuesFound >= totalDockerIssues && gameState.configChecksFound >= totalConfigs;
+    }
+
+    function showSlide(n) {
+      if (n === gameState.totalSlides && !_verifyCompletion()) return;
+      if (slideTimer) { clearInterval(slideTimer); slideTimer = null; }
+
+      document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+      document.getElementById('slide' + n).classList.add('active');
+      gameState.currentSlide = n;
+      updateProgress();
+      updateSCORM();
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'slideChange',
+          slide: n,
+          module: 'container-cloud'
+        }, '*');
+      }
+
+      if (contentSlides.includes(n)) {
+        const nextBtn = document.querySelector('#slide' + n + ' .navigation .btn:not(.btn-secondary)');
+        if (nextBtn && !nextBtn.dataset.timerCompleted) {
+          let remaining = MINIMUM_TIME_SECONDS;
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = '0.5';
+          nextBtn.textContent = 'Next (' + remaining + 's) →';
+          slideTimer = setInterval(function() {
+            remaining--;
+            if (remaining <= 0) {
+              clearInterval(slideTimer);
+              slideTimer = null;
+              nextBtn.disabled = false;
+              nextBtn.style.opacity = '1';
+              nextBtn.textContent = 'Next →';
+              nextBtn.dataset.timerCompleted = 'true';
+            } else {
+              nextBtn.textContent = 'Next (' + remaining + 's) →';
+            }
+          }, 1000);
+        }
+      }
+
+      if (n === 3) {
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+
+      if (n === 6) {
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+      
+      if (n === 7) {
+        if (document.getElementById('scenarioContainer').children.length === 0) {
+          loadScenarios();
+        }
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+    }
+    
+    function nextSlide() {
+      if (gameState.currentSlide < gameState.totalSlides) {
+        if (gameState.currentSlide + 1 === gameState.totalSlides && (gameState.scenariosCompleted < totalScenarios || gameState.dockerfileIssuesFound < totalDockerIssues || gameState.configChecksFound < totalConfigs)) {
+          return;
+        }
+        showSlide(gameState.currentSlide + 1);
+      }
+    }
+    
+    function previousSlide() {
+      if (gameState.currentSlide > 1) {
+        showSlide(gameState.currentSlide - 1);
+      }
+    }
+    
+    function startTraining() {
+      showAchievement('🚀', 'Training Started!', 'Your container & cloud security journey begins!');
+      nextSlide();
+    }
+    
+    // Completion
+    function completeTraining() {
+      if (gameState.scenariosCompleted < totalScenarios || gameState.dockerfileIssuesFound < totalDockerIssues || gameState.configChecksFound < totalConfigs) {
+        console.warn('Training completion requires finishing all scenarios.');
+        return;
+      }
+
+      const finalScore = Math.round(((gameState.scenariosCompleted || 0) / totalScenarios) * 100);
+      
+      document.getElementById('finalScore').textContent = finalScore + '%';
+      
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'moduleComplete',
+          module: 'container-cloud'
+        }, '*');
+      }
+      
+      scorm.setValue('cmi.core.score.raw', String(finalScore));
+      scorm.setValue('cmi.core.lesson_status', finalScore >= 80 ? 'passed' : 'completed');
+      scorm.commit();
+      
+      showSlide(8);
+      launchConfetti();
+      showAchievement('🏆', 'Training Complete!', 'You are now a Container & Cloud Security Expert!');
+    }
+    
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      container.style.display = 'block';
+      const colors = ['#7B2CBF', '#4CAF50', '#FFD700', '#FF6B6B', '#4ECDC4'];
+      
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.width = (Math.random() * 10 + 5) + 'px';
+          confetti.style.height = confetti.style.width;
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          confetti.style.animationDelay = Math.random() * 0.5 + 's';
+          container.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 4000);
+        }, i * 20);
+      }
+    }
+
+    function exitModule() {
+      scorm.setValue('cmi.core.exit', '');
+      scorm.commit();
+      scorm.finish();
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'goHome' }, '*');
+      } else {
+        window.close();
+        setTimeout(() => { alert('You can now close this window.'); }, 100);
+      }
+    }
+    
+    // Choice persistence functions
+    function saveChoice(slideId, choice) {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'choiceUpdate',
+          slideId: slideId,
+          choice: choice,
+          choicesData: {
+            choices: gameState.choices,
+            completedScenarios: gameState.completedScenarios || {},
+            dockerfileIssues: gameState.dockerfileIssues || {},
+            configChecks: gameState.configChecks || {}
+          }
+        }, '*');
+      }
+    }
+    
+    function restoreChoices() {
+      const choicesData = gameState.choices || {};
+      const completedScenarios = gameState.completedScenarios || {};
+      
+      gameState.scenariosCompleted = 0;
+
+      // Restore Dockerfile issues (slide 3)
+      if (gameState.currentSlide === 3) {
+        const issueMap = ['latest', 'packages', 'secret', 'chmod', 'ssh', 'root'];
+        const savedIssues = gameState.dockerfileIssues || {};
+        const cards = document.querySelectorAll('#slide3 .issue-card');
+
+        gameState.dockerfileIssuesFound = 0;
+        issueMap.forEach((issueId, idx) => {
+          if (savedIssues[issueId] || choicesData['dockerfile_' + issueId]) {
+            gameState.dockerfileIssues[issueId] = true;
+            gameState.dockerfileIssuesFound++;
+            if (cards[idx]) cards[idx].classList.add('found');
+          }
+        });
+
+        document.getElementById('issueCounter').textContent = 'Found ' + gameState.dockerfileIssuesFound + ' of 6 security issues (and avoided the decoys!)';
+
+        if (gameState.dockerfileIssuesFound === totalDockerIssues) {
+          document.getElementById('fixedDockerfileSection').style.display = 'block';
+          document.getElementById('dockerContinue').style.display = 'inline-flex';
+        }
+      }
+
+      // Restore cloud config checks (slide 6)
+      if (gameState.currentSlide === 6) {
+        const configOrder = ['s3_block', 's3_public', 'rds', 'sg_ssh', 'iam_star', 'cloudtrail'];
+        const savedConfigs = gameState.configChecks || {};
+
+        gameState.configChecksFound = 0;
+        configOrder.forEach((configId) => {
+          if (savedConfigs[configId] || choicesData['config_' + configId]) {
+            gameState.configChecks[configId] = true;
+            gameState.configChecksFound++;
+            const card = document.getElementById('configCard_' + configId);
+            if (card) {
+              const def = configDefinitions[configId];
+              card.classList.add('identified');
+              card.classList.add(def.safe ? 'safe' : 'insecure');
+              const buttonsDiv = card.querySelector('.config-buttons');
+              if (buttonsDiv) buttonsDiv.style.display = 'none';
+              const feedbackDiv = card.querySelector('.config-feedback');
+              if (feedbackDiv) {
+                feedbackDiv.textContent = (def.safe ? '✅ ' : '🚨 ') + def.feedback;
+                feedbackDiv.style.display = 'block';
+              }
+            }
+          }
+        });
+
+        document.getElementById('configCounter').textContent = 'Reviewed ' + gameState.configChecksFound + '/6 configurations';
+
+        if (gameState.configChecksFound === totalConfigs) {
+          document.getElementById('configResultSection').style.display = 'block';
+          document.getElementById('configContinue').style.display = 'inline-flex';
+        }
+      }
+
+      // Restore scenario choices (slide 7)
+      Object.keys(choicesData).forEach(choiceKey => {
+        const choice = choicesData[choiceKey];
+        if (choiceKey.startsWith('scenario_')) {
+          const scenarioIndex = parseInt(choiceKey.split('_')[1]);
+          
+          const buttons = document.querySelectorAll(`#scenario${scenarioIndex}Options button`);
+          if (buttons.length > choice && choice !== undefined) {
+            buttons[choice].classList.add('selected');
+            
+            const option = knowledgeScenarios[scenarioIndex] && knowledgeScenarios[scenarioIndex].options[choice];
+            const feedbackDiv = document.getElementById(`scenario${scenarioIndex}Feedback`);
+            
+            if (!feedbackDiv) return;
+            
+            if (option) {
+              buttons.forEach(btn => {
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.fontWeight = '';
+                btn.style.border = '';
+                btn.style.opacity = '';
+              });
+              
+              buttons[choice].style.background = option.correct ? 'linear-gradient(135deg, #4CAF50, #45a049)' : 'linear-gradient(135deg, #ff9800, #f57c00)';
+              buttons[choice].style.color = 'white';
+              buttons[choice].style.fontWeight = '600';
+              buttons[choice].style.border = option.correct ? '2px solid #4CAF50' : '2px solid #ff9800';
+              
+              if (option.correct) {
+                feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+                  ✅ ${option.feedback}
+                </div>`;
+                buttons.forEach(btn => {
+                  btn.disabled = true;
+                  btn.classList.add('disabled');
+                });
+                gameState.scenariosCompleted++;
+              } else {
+                feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+                  ❌ ${option.feedback} Try again!
+                </div>`;
+              }
+            }
+          }
+        }
+      });
+      
+      if (gameState.scenariosCompleted === totalScenarios) {
+        const completeBtn = document.getElementById('completeBtn');
+        if (completeBtn) completeBtn.style.display = 'inline-flex';
+      }
+    }
+
+    // SCORM tracking
+    function updateSCORM() {
+      if (scorm.api) {
+        scorm.setValue('cmi.core.lesson_location', String(gameState.currentSlide));
+        scorm.setValue('cmi.suspend_data', JSON.stringify({
+          currentSlide: gameState.currentSlide,
+          achievements: gameState.achievements
+        }));
+        
+        const elapsed = formatTime(new Date() - gameState.startTime);
+        scorm.setValue('cmi.core.session_time', elapsed);
+        scorm.commit();
+      }
+    }
+    
+    function formatTime(ms) {
+      const s = Math.floor(ms / 1000);
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return [h, m, sec].map(v => v < 10 ? '0' + v : v).join(':');
+    }
+    
+    window.onbeforeunload = function() {
+      if (scorm.api) {
+        scorm.finish();
+      }
+    };
+    
+    // Add spin animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+
+    window.startTraining = startTraining;
+    window.nextSlide = nextSlide;
+    window.previousSlide = previousSlide;
+    window.completeTraining = function() {
+      if (!_verifyCompletion()) return;
+      completeTraining();
+    };
+    window.exitModule = exitModule;
+    window.owlClick = owlClick;
+    window.findIssue = findIssue;
+    window.checkDecoy = checkDecoy;
+    window.classifyConfig = classifyConfig;
+    window.scenarioResponse = scenarioResponse;
+  })();
+  </script>
+</body>
+</html>

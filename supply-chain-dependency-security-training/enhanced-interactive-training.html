@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRC Engineering: Supply Chain & Dependency Security Training</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    :root {
+      --primary-purple:#7B2CBF; --light-purple:#E0B0FF; --dark-purple:#4A1A6B;
+      --primary-teal:#06A77D; --light-teal:#B2F5E8; --dark-teal:#045F4A;
+      --primary-off-black:#17191E; --primary-white:#FFFFFF; --success-green:#4CAF50;
+      --warning-amber:#FF9800; --error-red:#F44336; --neutral-gray:#9E9E9E;
+      --light-gray:#F5F5F5; --medium-gray:#E0E0E0; --primary-gradient: linear-gradient(135deg, #7B2CBF 0%, #06A77D 100%);
+    }
+    
+    body { 
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+      background: #0a0e27;
+      color:var(--primary-off-black); 
+      min-height:100vh; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      padding:20px; 
+      line-height:1.6;
+      overflow-x: hidden;
+    }
+    
+    /* Static gradient background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(123,44,191,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(123,44,191,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 20%, rgba(0,85,204,0.1) 0%, transparent 50%);
+      z-index: -1;
+    }
+    
+    .module-container { 
+      background:var(--primary-white); 
+      border-radius:16px; 
+      box-shadow:0 10px 40px rgba(0,8,77,.25); 
+      max-width:1100px; 
+      width:100%; 
+      overflow:hidden;
+    }
+    
+    .grc-header { 
+      background:var(--primary-gradient); 
+      padding:20px 32px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:space-between; 
+      color:var(--primary-white);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .grc-logo { 
+      display:flex; 
+      align-items:center; 
+      gap:16px; 
+      font-weight:700; 
+      font-size:20px;
+      z-index: 2;
+    }
+    
+    .grc-owl { 
+      width:48px; 
+      height:48px; 
+      background:var(--primary-white); 
+      border-radius:12px; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      font-size:28px;
+      animation: bounce 2s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .grc-owl:hover {
+      animation: none;
+      transform: rotate(10deg) scale(1.1);
+    }
+    
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    
+    .progress-bar { 
+      height:6px; 
+      background:var(--medium-gray); 
+      position:relative; 
+      overflow:hidden; 
+    }
+    
+    .progress-fill { 
+      height:100%; 
+      background:var(--primary-gradient); 
+      width:0%; 
+      transition:width .5s ease;
+      box-shadow: 0 0 10px rgba(123,44,191,0.5);
+    }
+    
+    .slide { 
+      padding:56px 48px; 
+      min-height:580px; 
+      display:none; 
+      animation:slideIn .4s ease;
+      position: relative;
+    }
+    
+    .slide.active { display:block; }
+    
+    @keyframes slideIn { 
+      from{ opacity:0; transform:translateX(30px); } 
+      to{ opacity:1; transform:translateX(0); } 
+    }
+    
+    /* Hide slide content briefly during restoration */
+    .slide.restoring {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    h1 { 
+      color:var(--dark-purple); 
+      font-size:2.5rem; 
+      font-weight:800; 
+      margin-bottom:24px; 
+      text-align:center; 
+      line-height:1.2; 
+    }
+    
+    h2 { 
+      color:var(--dark-purple); 
+      font-size:2rem; 
+      font-weight:700; 
+      margin-bottom:24px; 
+    }
+    
+    p { 
+      font-size:1.125rem; 
+      margin-bottom:20px; 
+      color:var(--primary-off-black); 
+      line-height:1.7;
+    }
+    
+    .intro-animation {
+      font-size: 120px;
+      text-align: center;
+      margin: 40px 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin: 32px 0;
+    }
+    
+    .info-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border: 2px solid var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      border-color: var(--primary-purple);
+    }
+    
+    .info-card-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    
+    .info-card h3 {
+      color: var(--dark-purple);
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+    
+    .navigation { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      margin-top:40px; 
+      padding-top:32px; 
+      border-top:2px solid var(--medium-gray); 
+    }
+    
+    .btn { 
+      background:var(--primary-gradient); 
+      color:var(--primary-white); 
+      padding:14px 28px; 
+      border:none; 
+      border-radius:8px; 
+      font-size:1rem; 
+      font-weight:600; 
+      cursor:pointer; 
+      transition:all .3s ease; 
+      margin:8px; 
+      display:inline-flex; 
+      align-items:center; 
+      gap:8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .btn:hover { 
+      transform:translateY(-2px); 
+      box-shadow:0 6px 20px rgba(123,44,191,.3); 
+    }
+    
+    .btn-secondary { 
+      background:transparent; 
+      color:var(--primary-purple); 
+      border:2px solid var(--primary-purple); 
+    }
+    
+    .btn-secondary:hover { 
+      background:var(--light-purple); 
+      border-color:var(--dark-purple); 
+      color:var(--dark-purple); 
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ff3b30, #ff6b60);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    }
+    
+    .btn:disabled, .btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    /* Package registry simulator */
+    .website-simulator {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 0;
+      margin: 24px 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    
+    .browser-bar {
+      background: #2d2d2d;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #444;
+    }
+    
+    .browser-controls {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .browser-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff5f57;
+    }
+    
+    .browser-dot:nth-child(2) { background: #ffbd2e; }
+    .browser-dot:nth-child(3) { background: #28ca42; }
+    
+    .url-bar {
+      flex: 1;
+      background: #1a1a1a;
+      color: #888;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    
+    .suspicious-url {
+      color: #ff3b30;
+      font-weight: bold;
+    }
+    
+    .website-content {
+      background: #fff;
+      padding: 32px;
+      min-height: 300px;
+      position: relative;
+    }
+    
+    .fake-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      text-align: center;
+      display: none;
+      z-index: 10;
+      border: 3px solid #ff3b30;
+    }
+    
+    .fake-popup.show {
+      display: block;
+      animation: popIn 0.3s ease;
+    }
+    
+    @keyframes popIn {
+      from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    
+    /* Interactive decision buttons */
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 50;
+    }
+    
+    .decision-btn {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .decision-btn:hover {
+      background: var(--light-purple);
+      border-color: var(--primary-purple);
+      box-shadow: 0 4px 12px rgba(123,44,191,0.2);
+      transform: translateY(-2px);
+    }
+    
+    .decision-btn.selected {
+      background: var(--light-purple);
+      border-color: var(--primary-purple);
+      font-weight: 600;
+    }
+    
+    .decision-btn.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    /* Detection challenge */
+    .detection-challenge {
+      background: #f8f9fa;
+      border: 2px solid var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+    
+    .site-card {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 12px 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .site-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .site-card.selected {
+      border-color: var(--primary-purple);
+      background: var(--light-purple);
+    }
+    
+    .site-card.correct {
+      border-color: var(--success-green);
+      background: rgba(76,175,80,0.1);
+    }
+    
+    .site-card.incorrect {
+      border-color: var(--error-red);
+      background: rgba(244,67,54,0.1);
+    }
+    
+    .url-display {
+      font-family: monospace;
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+      padding: 4px 8px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    
+    /* Gamification elements */
+    .achievement {
+      position: fixed;
+      top: 20px;
+      right: -500px;
+      background: #fff;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: right 0.5s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    
+    .achievement.show {
+      right: 20px;
+      pointer-events: auto;
+    }
+    
+    .achievement-icon {
+      font-size: 32px;
+      animation: celebrate 0.5s ease;
+    }
+    
+    @keyframes celebrate {
+      0% { transform: scale(0) rotate(0deg); }
+      50% { transform: scale(1.2) rotate(180deg); }
+      100% { transform: scale(1) rotate(360deg); }
+    }
+    
+    .score-display {
+      background: linear-gradient(135deg, #7B2CBF, #06A77D);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(123,44,191,0.3);
+    }
+    
+    /* Certificate */
+    .certificate {
+      text-align: center;
+      padding: 48px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 16px;
+      border: 3px solid var(--primary-purple);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .certificate::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(123,44,191,0.1), transparent);
+      animation: shine 3s linear infinite;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    .certificate-seal {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      position: relative;
+      animation: sealRotate 20s linear infinite;
+    }
+    
+    @keyframes sealRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .trophy-icon {
+      font-size: 80px;
+      color: #FFD700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      animation: trophyGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes trophyGlow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    /* Confetti */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 9999;
+      display: none;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--primary-purple);
+      animation: confettiFall 3s linear;
+    }
+    
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    
+    /* SCORM status indicator */
+    .scorm-status {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(23,25,30,.9);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: .75rem;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Feedback styles */
+    .feedback {
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 16px;
+      display: none;
+    }
+    
+    .feedback.correct {
+      background: #d4edda;
+      color: #155724;
+      border: 2px solid var(--success-green);
+    }
+    
+    .feedback.incorrect {
+      background: #f8d7da;
+      color: #721c24;
+      border: 2px solid var(--error-red);
+    }
+    
+    .feedback.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 2px solid #ffc107;
+    }
+    
+    /* Responsive */
+    @media (max-width:768px) {
+      .slide { padding:32px 24px; }
+      h1 { font-size:2rem; }
+      h2 { font-size:1.5rem; }
+      .decision-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Achievement Popup -->
+  <div class="achievement" id="achievementPopup" role="status" aria-live="polite">
+    <div class="achievement-icon" id="achievementIcon">🏆</div>
+    <div>
+      <div style="font-weight:700; color:var(--dark-purple);" id="achievementTitle">Achievement Unlocked!</div>
+      <div style="font-size:14px; color:#6c757d;" id="achievementText">You're making great progress!</div>
+    </div>
+  </div>
+
+  <!-- Confetti Container -->
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="module-container">
+    <div class="grc-header">
+      <div class="grc-logo">
+        <div class="grc-owl" onclick="owlClick()">👾</div>
+        <span>Supply Chain Security</span>
+      </div>
+    </div>
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Training progress"><div class="progress-fill" id="progressBar"></div></div>
+
+    <!-- Slide 1: Welcome -->
+    <div class="slide active" id="slide1">
+      <h1>📦 Supply Chain & Dependency Security</h1>
+      <div class="intro-animation">🔗</div>
+      <p style="text-align:center; font-size:1.25rem; margin-bottom:32px;">
+        Welcome, Security-Minded Developer! Learn to protect your software from supply chain attacks, malicious dependencies, and compromised build pipelines.
+      </p>
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">🧩</span>
+          <h3>Dependency Risks</h3>
+          <p>Vulnerable or malicious packages that enter your codebase through package managers</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔗</span>
+          <h3>Build Pipeline Attacks</h3>
+          <p>Compromised CI/CD tools, plugins, and build processes that inject malicious code</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">📋</span>
+          <h3>Software Bill of Materials</h3>
+          <p>Understanding and managing the components that make up your software</p>
+        </div>
+      </div>
+      <div class="navigation">
+        <span></span>
+        <button class="btn" onclick="startTraining()">Begin Training →</button>
+      </div>
+    </div>
+
+    <!-- Slide 2: Understanding Supply Chain Attacks -->
+    <div class="slide" id="slide2">
+      <h2>🔎 Understanding Supply Chain Attacks</h2>
+      <p>A supply chain attack targets the tools, libraries, and processes developers trust—rather than attacking your code directly.</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">🕵️</span>
+          <h3>Reconnaissance</h3>
+          <p>Attackers identify popular packages, build tools, or infrastructure your organization depends on</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🎭</span>
+          <h3>Compromise</h3>
+          <p>Inject malicious code into a dependency update, publish a typosquatting package, or compromise a maintainer account</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🚀</span>
+          <h3>Distribution</h3>
+          <p>The malicious code spreads automatically when developers run npm install, pip install, or update dependencies</p>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 3: Real-World Supply Chain Attacks -->
+    <div class="slide" id="slide3">
+      <h2>📰 Real-World Supply Chain Attacks</h2>
+      <p>These actual supply chain attacks have impacted millions of developers and organizations:</p>
+      
+      <div class="detection-challenge">
+        <h3 style="color:var(--dark-purple); margin-bottom:16px;">Notable Incidents:</h3>
+        <div class="site-card">
+          <strong>🔴 SolarWinds (2020)</strong>
+          <p>Attackers compromised the build system to inject malware into software updates used by 18,000 organizations including government agencies.</p>
+          <span class="url-display">Impact: 18,000+ organizations compromised</span>
+        </div>
+        <div class="site-card">
+          <strong>🟠 Log4Shell / Log4j (2021)</strong>
+          <p>A critical vulnerability in the widely-used Log4j logging library affected millions of Java applications worldwide.</p>
+          <span class="url-display">Impact: Millions of Java applications</span>
+        </div>
+        <div class="site-card">
+          <strong>🟡 Codecov (2021)</strong>
+          <p>Attackers modified a bash uploader script to exfiltrate CI/CD environment variables and secrets from thousands of repos.</p>
+          <span class="url-display">Impact: Thousands of CI/CD pipelines</span>
+        </div>
+        <div class="site-card">
+          <strong>🔵 ua-parser-js (2021)</strong>
+          <p>A hijacked npm package with 8M weekly downloads delivered cryptominers and credential stealers to developers.</p>
+          <span class="url-display">Impact: 8M weekly downloads compromised</span>
+        </div>
+        <div class="site-card">
+          <strong>🟣 event-stream (2018)</strong>
+          <p>A trusted npm package maintainer transferred ownership to an attacker who added code to steal cryptocurrency wallets.</p>
+          <span class="url-display">Impact: 2M weekly downloads at time of attack</span>
+        </div>
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 4: How Your Development Environment Is Targeted -->
+    <div class="slide" id="slide4">
+      <h2>🎯 How Your Development Environment Is Targeted</h2>
+      <p>Attackers exploit the trust developers place in their tools and packages:</p>
+      
+      <div class="info-cards">
+        <div class="info-card">
+          <span class="info-card-icon">📝</span>
+          <h3>Typosquatting Packages</h3>
+          <p>lodas instead of lodash, colrs instead of colors—misspelled package names that install malware</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔀</span>
+          <h3>Dependency Confusion</h3>
+          <p>Publishing a malicious package to public npm with the same name as your private internal package</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔓</span>
+          <h3>Maintainer Account Hijacking</h3>
+          <p>Compromising an npm/PyPI maintainer's account to push malicious updates to trusted packages</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">🔧</span>
+          <h3>Malicious Build Plugins</h3>
+          <p>Compromised GitHub Actions, Jenkins plugins, or CI/CD tools that run in your build pipeline</p>
+        </div>
+        <div class="info-card">
+          <span class="info-card-icon">⭐</span>
+          <h3>Star Jacking</h3>
+          <p>Fake GitHub repositories with inflated stars to appear legitimate when developers search for packages</p>
+        </div>
+      </div>
+      
+      <p style="text-align:center; color:var(--error-red); font-weight:600; margin-top:24px;">
+        ⚠️ Even trusted packages and tools can be compromised!
+      </p>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()">Next →</button>
+      </div>
+    </div>
+
+    <!-- Slide 5: Package Trust Challenge -->
+    <div class="slide" id="slide5">
+      <h2>🔍 Package Trust Challenge</h2>
+      <p>You found a package called <strong>react-utils-helper</strong> on npm. Can you spot the red flags?</p>
+      
+      <div class="website-simulator">
+        <div class="browser-bar">
+          <div class="browser-controls">
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+          </div>
+          <div class="url-bar" id="urlDisplay">https://www.npmjs.com/package/react-utils-helper</div>
+        </div>
+        <div class="website-content">
+          <h3 style="color:#333;">react-utils-helper</h3>
+          <p style="color:#666; font-size:14px;">1.0.0 &bull; Published <span style="color:#ff3b30; font-weight:bold;">yesterday</span> &bull; <span style="color:#ff3b30; font-weight:bold;">12 downloads</span>/week</p>
+          <p style="color:#888; font-size:13px; margin-top:8px;">Useful React utilities for handling state and props efficiently (copied from react-utils)</p>
+          <div style="margin-top:12px; font-size:13px; color:#999;">
+            <span>👤 1 maintainer: <strong>xdev_2024</strong> (no other packages)</span><br>
+            <span style="color:#ff3b30;">⚠️ No repository link &bull; No homepage</span>
+          </div>
+          <div class="fake-popup" id="fakePopup">
+            <h4 style="color:#ff3b30; margin-bottom:16px;">⚠️ Suspicious postinstall Script Detected</h4>
+            <p style="margin-bottom:16px;">This package runs a postinstall script that downloads and executes remote code</p>
+            <button class="btn btn-danger" onclick="showWarning()">View Script Details</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="decision-grid">
+        <button class="decision-btn" onclick="trustDecision('normal')">This package looks safe to install</button>
+        <button class="decision-btn" onclick="trustDecision('plugin')">The postinstall script is suspicious</button>
+        <button class="decision-btn" onclick="trustDecision('url')">Just check the download count</button>
+        <button class="decision-btn" onclick="trustDecision('leave')">Skip this package entirely</button>
+      </div>
+      
+      <div id="trustFeedback" style="margin-top:24px;"></div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="trustContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 6: Package Detection Game -->
+    <div class="slide" id="slide6">
+      <h2>🔍 Spot the Suspicious Packages</h2>
+      <p>Click on ALL the suspicious packages that could be typosquatting or dependency confusion attacks:</p>
+      
+      <div class="detection-challenge">
+        <div class="site-card" onclick="checkURL(this, 'lodash')">
+          <strong>Utility Library</strong>
+          <span class="url-display">lodash</span>
+        </div>
+        <div class="site-card" onclick="checkURL(this, 'lo-dash')">
+          <strong>Utility Library</strong>
+          <span class="url-display">lo-dash</span>
+        </div>
+        <div class="site-card" onclick="checkURL(this, 'express')">
+          <strong>Web Framework</strong>
+          <span class="url-display">express</span>
+        </div>
+        <div class="site-card" onclick="checkURL(this, 'expres')">
+          <strong>Web Framework</strong>
+          <span class="url-display">expres</span>
+        </div>
+        <div class="site-card" onclick="checkURL(this, 'react-dom')">
+          <strong>React DOM</strong>
+          <span class="url-display">react-dom</span>
+        </div>
+        <div class="site-card" onclick="checkURL(this, 'reactdom-utils')">
+          <strong>React Utilities</strong>
+          <span class="url-display">reactdom-utils</span>
+        </div>
+      </div>
+      
+      <div class="score-display">
+        Found: <span id="urlScore">0/3</span> suspicious packages
+      </div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="nextSlide()" id="urlContinue" style="display:none;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Slide 7: Incident Response: Compromised Dependency -->
+    <div class="slide" id="slide7">
+      <h2>🚨 Incident Response: Compromised Dependency</h2>
+      <p>Your security scanner flags that <code style="background:#fee;color:#c00;padding:2px 6px;border-radius:4px;">colors@1.4.1</code> (a package you depend on) has been compromised. The maintainer pushed a malicious update that causes infinite loops.</p>
+      
+      <div class="website-simulator">
+        <div class="browser-bar">
+          <div class="browser-controls">
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+            <div class="browser-dot"></div>
+          </div>
+          <div class="url-bar">
+            <span class="suspicious-url">⚠ SECURITY ALERT: colors@1.4.1 compromised</span>
+          </div>
+        </div>
+        <div class="website-content" style="text-align:center;">
+          <h3 style="color:#ff3b30; margin-bottom:24px;">🔴 Dependency Vulnerability Alert</h3>
+          <div style="max-width:500px; margin:0 auto; text-align:left; background:#fff3cd; padding:20px; border-radius:8px; border-left:4px solid #ffc107;">
+            <p style="margin:0 0 8px 0; font-weight:bold; color:#856404;">CVE-2022-XXXX — Malicious Code Injection</p>
+            <p style="margin:0 0 8px 0; color:#856404; font-size:14px;">Package: colors v1.4.1</p>
+            <p style="margin:0 0 8px 0; color:#856404; font-size:14px;">Impact: Infinite loop causing denial of service in production</p>
+            <p style="margin:0; color:#856404; font-size:14px;">Last safe version: colors v1.4.0</p>
+          </div>
+        </div>
+      </div>
+      
+      <p style="text-align:center; font-weight:600; margin-top:24px;">What should you do?</p>
+      
+      <div class="decision-grid">
+        <button class="decision-btn" onclick="responseDecision('report')">Pin to safe version and investigate</button>
+        <button class="decision-btn" onclick="responseDecision('login')">Wait for npm to remove it</button>
+        <button class="decision-btn" onclick="responseDecision('password')">Remove the dependency entirely</button>
+        <button class="decision-btn" onclick="responseDecision('verify')">Ignore—it only affects development</button>
+      </div>
+      
+      <div id="responseFeedback" style="margin-top:24px;"></div>
+      
+      <div class="navigation">
+        <button class="btn btn-secondary" onclick="previousSlide()">← Back</button>
+        <button class="btn" onclick="completeTraining()" id="responseContinue" style="display:none;">Complete Training →</button>
+      </div>
+    </div>
+
+    <!-- Slide 8: Certificate -->
+    <div class="slide" id="slide8">
+      <div class="certificate">
+        <div class="trophy-icon">🏆</div>
+        <h1 style="color:var(--primary-purple); margin:24px 0;">Supply Chain Security Expert!</h1>
+        <p style="font-size:1.25rem; color:var(--dark-purple); margin-bottom:32px;">
+          You've completed the Supply Chain & Dependency Security Training!
+        </p>
+
+        <div style="margin:32px 0;">
+          <div>
+            <div style="font-size:2rem; font-weight:700; color:var(--primary-purple);" id="finalScore">100%</div>
+            <div style="color:#6c757d;">Final Score</div>
+          </div>
+        </div>
+
+        <p style="color:var(--primary-purple); font-weight:600; font-size:1.125rem;">
+          Stay Vigilant. Stay Secure. 👾
+        </p>
+        
+        <button class="btn" onclick="exitModule()" style="margin-top:24px;">Exit Training</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="scorm-status" id="scormStatus">SCORM: Disconnected</div>
+
+  <script>
+  (function() {
+    // SCORM API wrapper
+    var scorm = {
+      version: null, api: null,
+      init: function() {
+        try {
+          this.api = this.getAPI();
+          if (this.api) {
+            this.version = this.getVersion();
+            var result = this.api.LMSInitialize ? this.api.LMSInitialize("") : this.api.Initialize("");
+            if (result == "true") {
+              this.setStatus("initialized");
+              this.setValue("cmi.core.lesson_status", "incomplete");
+              this.setValue("cmi.core.score.min", "0");
+              this.setValue("cmi.core.score.max", "100");
+              this.setValue("cmi.core.score.raw", "0");
+              this.commit();
+              return true;
+            }
+          }
+        } catch(e) { console.log("SCORM API not available - standalone mode"); }
+        return false;
+      },
+      getAPI: function() {
+        var api=null; if (window.parent && window.parent!=window) api=this.findAPI(window.parent);
+        if (!api && window.opener) api=this.findAPI(window.opener);
+        if (!api) api=this.findAPI(window);
+        return api;
+      },
+      findAPI: function(win) {
+        var i=0; while(!win.API && !win.API_1484_11 && win.parent && win.parent!=win && i<500){ i++; win=win.parent; }
+        return win.API || win.API_1484_11;
+      },
+      getVersion: function(){ if(this.api){ if(this.api.LMSInitialize) return "1.2"; if(this.api.Initialize) return "2004";} return null; },
+      getValue: function(e){ if(!this.api) return ""; if(this.version=="2004"){ var map={"cmi.core.lesson_status":"cmi.completion_status","cmi.core.score.raw":"cmi.score.raw","cmi.core.score.min":"cmi.score.min","cmi.core.score.max":"cmi.score.max","cmi.core.lesson_location":"cmi.location","cmi.core.session_time":"cmi.session_time","cmi.core.exit":"cmi.exit"}; return this.api.GetValue(map[e]||e); } return this.api.LMSGetValue(e); },
+      setValue: function(e,v){ if(!this.api) return false; if(this.version=="2004"){ var map={"cmi.core.lesson_status":"cmi.completion_status","cmi.core.score.raw":"cmi.score.raw","cmi.core.score.min":"cmi.score.min","cmi.core.score.max":"cmi.score.max","cmi.core.lesson_location":"cmi.location","cmi.core.session_time":"cmi.session_time","cmi.core.exit":"cmi.exit"}; return this.api.SetValue(map[e]||e,v); } return this.api.LMSSetValue(e,v); },
+      commit: function(){ if(!this.api) return false; return this.version=="1.2"? this.api.LMSCommit(""): this.api.Commit(""); },
+      finish: function(){ if(!this.api) return false; return this.version=="1.2"? this.api.LMSFinish(""): this.api.Terminate(""); },
+      setStatus: function(status){ var el=document.getElementById('scormStatus'); if(el){ el.textContent='SCORM: '+status; el.style.display='block'; } }
+    };
+    
+    // Game state management
+    let gameState = {
+      startTime: new Date(),
+      currentSlide: 1,
+      totalSlides: 8,
+      userScore: 0,
+      achievements: [],
+      trustComplete: false,
+      urlsFound: 0,
+      totalSuspiciousUrls: 3,
+      urlsChecked: [],
+      responseComplete: false,
+      scenariosCompleted: 0,
+      totalScenarios: 3,
+      choices: {}
+    };
+    
+    
+    // Achievement system
+    function showAchievement(icon, title, text) {
+      const popup = document.getElementById('achievementPopup');
+      document.getElementById('achievementIcon').textContent = icon;
+      document.getElementById('achievementTitle').textContent = title;
+      document.getElementById('achievementText').textContent = text;
+      
+      popup.classList.add('show');
+      setTimeout(() => {
+        popup.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Website trust challenge
+    function trustDecision(choice) {
+      const trustKey = `trust_decision`;
+      
+      const feedbackDiv = document.getElementById('trustFeedback');
+      const popup = document.getElementById('fakePopup');
+      const buttons = document.querySelectorAll('#slide5 .decision-btn');
+      
+      // Save the choice
+      gameState.choices[trustKey] = choice;
+      saveChoice(trustKey, choice);
+      
+      feedbackDiv.innerHTML = '';
+      
+      // Clear all button styling and indicators first
+      buttons.forEach(btn => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.fontWeight = '';
+        btn.style.border = '';
+        btn.style.opacity = '';
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+        btn.style.position = '';
+        btn.style.zIndex = '';
+        // Remove any existing indicators
+        const existingIndicator = btn.querySelector('.action-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        const existingLabel = btn.querySelector('.action-label');
+        if (existingLabel) existingLabel.remove();
+      });
+      
+      // Find the clicked button
+      let clickedButton;
+      buttons.forEach(btn => {
+        if ((choice === 'normal' && btn.textContent.includes('This package looks safe')) ||
+            (choice === 'plugin' && btn.textContent.includes('postinstall script is suspicious')) ||
+            (choice === 'url' && btn.textContent.includes('Just check the download count')) ||
+            (choice === 'leave' && btn.textContent.includes('Skip this package entirely'))) {
+          clickedButton = btn;
+        }
+      });
+      
+      // Make non-selected buttons slightly faded but still readable
+      buttons.forEach(btn => {
+        if (btn !== clickedButton) {
+          btn.style.opacity = '0.7';
+          btn.style.transform = 'scale(0.98)';
+        }
+      });
+      
+      switch(choice) {
+        case 'normal':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ Look more carefully! Did you notice the suspicious postinstall script and other red flags?
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'plugin':
+          feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ Excellent! A postinstall script that downloads remote code is a major red flag for supply chain attacks!
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #2E7D32';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(76,175,80,0.4), 0 0 25px rgba(76,175,80,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '✅';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #4CAF50;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          showAchievement('🛡️', 'Threat Detector', 'Spotted malicious postinstall script!');
+          gameState.trustComplete = true;
+          document.getElementById('trustContinue').style.display = 'inline-flex';
+          document.querySelectorAll('#slide5 .decision-btn').forEach(btn => {
+            btn.classList.add('disabled');
+          });
+          break;
+        case 'url':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Good instinct to check downloads, but did you see the suspicious postinstall script?
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #ff9800, #E65100)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #E65100';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(255,152,0,0.4), 0 0 25px rgba(255,152,0,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '⚠️';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #ff9800;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'leave':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Skipping is safe, but identifying the specific threat (postinstall script) is important for your team!
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #ff9800, #E65100)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #E65100';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(255,152,0,0.4), 0 0 25px rgba(255,152,0,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '⚠️';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #ff9800;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+      }
+    }
+    
+    function showWarning() {
+      showPluginWarningPopup();
+    }
+
+    function showPluginWarningPopup() {
+      const popupHTML = `
+        <div id="pluginWarningPopup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0); display: flex; align-items: center; justify-content: center; z-index: 2000; transition: background 0.3s ease;">
+          <div id="pluginWarningContent" style="background: white; border-radius: 16px; width: 90%; max-width: 500px; padding: 40px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); transform: scale(0.7); opacity: 0; transition: all 0.3s ease;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🚨</div>
+            <h2 style="color: #f44336; margin-bottom: 16px;">Supply Chain Attack Alert!</h2>
+            <p style="color: #666; font-size: 16px; margin-bottom: 24px; line-height: 1.6;">
+              <strong>NEVER trust packages with suspicious postinstall scripts!</strong><br><br>
+              This is exactly how supply chain attacks deliver malware. Malicious packages run code on your machine during installation.
+            </p>
+            <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; border-radius: 4px; margin-bottom: 24px; text-align: left;">
+              <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.5;">
+                <strong>🛡️ Red Flags:</strong><br>
+                • Postinstall script downloading remote code<br>
+                • Published very recently with few downloads<br>
+                • No repository link or homepage<br>
+                • Single maintainer with no track record
+              </p>
+            </div>
+            <button onclick="closePluginWarningPopup()" style="background: linear-gradient(135deg, #7B2CBF 0%, #06A77D 100%); color: white; border: none; padding: 12px 32px; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 600; transition: all 0.2s ease;">
+              I Understand
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', popupHTML);
+
+      // Trigger animation immediately
+      requestAnimationFrame(() => {
+        const popup = document.getElementById('pluginWarningPopup');
+        const content = document.getElementById('pluginWarningContent');
+        if (popup && content) {
+          popup.style.background = 'rgba(0,0,0,0.7)';
+          content.style.transform = 'scale(1)';
+          content.style.opacity = '1';
+        }
+      });
+    }
+
+    function closePluginWarningPopup() {
+      const popup = document.getElementById('pluginWarningPopup');
+      const content = document.getElementById('pluginWarningContent');
+
+      if (popup && content) {
+        // Animate out
+        popup.style.background = 'rgba(0,0,0,0)';
+        content.style.transform = 'scale(0.7)';
+        content.style.opacity = '0';
+
+        // Remove after animation completes
+        setTimeout(() => {
+          popup.remove();
+        }, 300);
+      }
+    }
+    
+    // URL detection game
+    const suspiciousPackages = {'lo-dash': true, 'expres': true, 'reactdom-utils': true};
+    
+    function checkURL(element, name) {
+      if (!gameState.urlsChecked) gameState.urlsChecked = [];
+      
+      const isSuspicious = !!suspiciousPackages[name];
+      
+      if (gameState.urlsChecked.includes(name)) {
+        if (isSuspicious) {
+          alert('✅ You already identified this suspicious package!');
+        } else {
+          alert('✅ You already checked this legitimate package.');
+        }
+        return;
+      }
+      
+      gameState.urlsChecked.push(name);
+      const urlKey = `url_${name}`;
+      gameState.choices[urlKey] = true;
+      saveChoice(urlKey, true);
+      
+      if (isSuspicious) {
+        element.classList.add('correct');
+        gameState.urlsFound++;
+        
+        if (gameState.urlsFound === 1) {
+          showAchievement('👁️', 'Sharp Eye', 'Found your first suspicious package!');
+        }
+      } else {
+        element.classList.add('incorrect');
+      }
+      
+      document.getElementById('urlScore').textContent = gameState.urlsFound + '/' + gameState.totalSuspiciousUrls;
+      
+      if (gameState.urlsFound === gameState.totalSuspiciousUrls) {
+        showAchievement('🔍', 'Package Inspector', 'Found all suspicious packages!');
+        document.getElementById('urlContinue').style.display = 'inline-flex';
+      }
+    }
+    
+    // Response simulation
+    function responseDecision(choice) {
+      const responseKey = `response_decision`;
+      
+      const feedbackDiv = document.getElementById('responseFeedback');
+      const buttons = document.querySelectorAll('#slide7 .decision-btn');
+      
+      // Save the choice
+      gameState.choices[responseKey] = choice;
+      saveChoice(responseKey, choice);
+      
+      feedbackDiv.innerHTML = '';
+      
+      // Clear all button styling and indicators first
+      buttons.forEach(btn => {
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.style.fontWeight = '';
+        btn.style.border = '';
+        btn.style.opacity = '';
+        btn.style.transform = '';
+        btn.style.boxShadow = '';
+        btn.style.position = '';
+        btn.style.zIndex = '';
+        // Remove any existing indicators
+        const existingIndicator = btn.querySelector('.action-indicator');
+        if (existingIndicator) existingIndicator.remove();
+        const existingLabel = btn.querySelector('.action-label');
+        if (existingLabel) existingLabel.remove();
+      });
+      
+      // Find the clicked button
+      let clickedButton;
+      buttons.forEach(btn => {
+        if ((choice === 'login' && btn.textContent.includes('Wait for npm to remove it')) ||
+            (choice === 'verify' && btn.textContent.includes('Ignore')) ||
+            (choice === 'password' && btn.textContent.includes('Remove the dependency entirely')) ||
+            (choice === 'report' && btn.textContent.includes('Pin to safe version'))) {
+          clickedButton = btn;
+        }
+      });
+      
+      // Make non-selected buttons slightly faded but still readable
+      buttons.forEach(btn => {
+        if (btn !== clickedButton) {
+          btn.style.opacity = '0.7';
+          btn.style.transform = 'scale(0.98)';
+        }
+      });
+      
+      switch(choice) {
+        case 'login':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ Waiting is risky! The compromised package is actively running in your builds. You need to act immediately.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          showAchievement('⚠️', 'Close Call', 'Act fast on compromised dependencies!');
+          break;
+        case 'verify':
+          feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+            ❌ Ignoring a compromised dependency is dangerous! Even if it seems like a dev-only issue, malicious code can exfiltrate secrets from your CI environment.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #f44336, #C62828)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #C62828';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(244,67,54,0.4), 0 0 25px rgba(244,67,54,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '❌';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #f44336;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'password':
+          feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+            ⚠️ Removing entirely works if you can, but the best immediate action is pinning to a safe version while you investigate the full impact.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #ff9800, #E65100)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #E65100';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(255,152,0,0.4), 0 0 25px rgba(255,152,0,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '⚠️';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #ff9800;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          break;
+        case 'report':
+          feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+            ✅ Correct! Pin to the last known safe version (colors@1.4.0), investigate which builds were affected, and alert your security team.
+          </div>`;
+          if (clickedButton) {
+            clickedButton.style.background = 'linear-gradient(135deg, #4CAF50, #2E7D32)';
+            clickedButton.style.color = 'white';
+            clickedButton.style.fontWeight = 'bold';
+            clickedButton.style.border = '4px solid #2E7D32';
+            clickedButton.style.transform = 'scale(1.12)';
+            clickedButton.style.boxShadow = '0 8px 30px rgba(76,175,80,0.4), 0 0 25px rgba(76,175,80,0.3)';
+            clickedButton.style.opacity = '1';
+            clickedButton.style.position = 'relative';
+            clickedButton.style.zIndex = '100';
+            
+            const icon = document.createElement('span');
+            icon.className = 'action-indicator';
+            icon.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+            icon.textContent = '✅';
+            clickedButton.insertBefore(icon, clickedButton.firstChild);
+            
+            const label = document.createElement('div');
+            label.className = 'action-label';
+            label.style.cssText = `
+              position: absolute;
+              top: -30px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: #4CAF50;
+              color: white;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+              font-weight: bold;
+              white-space: nowrap;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            label.textContent = '🎯 YOUR CHOICE';
+            clickedButton.appendChild(label);
+          }
+          showAchievement('🔒', 'Supply Chain Pro', 'Excellent dependency incident response!');
+          gameState.responseComplete = true;
+          document.getElementById('responseContinue').style.display = 'inline-flex';
+          document.querySelectorAll('#slide7 .decision-btn').forEach(btn => {
+            btn.classList.add('disabled');
+          });
+          break;
+      }
+    }
+    
+    // Navigation
+    function updateProgress() {
+      document.getElementById('progressBar').style.width = (gameState.currentSlide / gameState.totalSlides) * 100 + '%';
+    }
+    
+    function _verifyCompletion() {
+      return gameState.trustComplete && gameState.responseComplete && gameState.urlsFound >= gameState.totalSuspiciousUrls;
+    }
+
+    function showSlide(n) {
+      if (n === gameState.totalSlides && !_verifyCompletion()) return;
+      document.querySelectorAll('.slide').forEach(slide => slide.classList.remove('active'));
+      document.getElementById('slide' + n).classList.add('active');
+      gameState.currentSlide = n;
+      updateProgress();
+      updateSCORM();
+      
+      // Minimum dwell time on content slides
+      if (n === 2 || n === 3 || n === 4) {
+        const slideEl = document.getElementById('slide' + n);
+        const nextBtn = slideEl.querySelector('.navigation .btn:not(.btn-secondary)');
+        if (nextBtn && !nextBtn.dataset.timerCompleted) {
+          if (!nextBtn.dataset.originalText) {
+            nextBtn.dataset.originalText = nextBtn.textContent;
+          }
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = '0.5';
+          let remaining = 15;
+          nextBtn.textContent = 'Next (' + remaining + 's) →';
+          const dwellTimer = setInterval(() => {
+            remaining--;
+            if (remaining <= 0) {
+              clearInterval(dwellTimer);
+              nextBtn.disabled = false;
+              nextBtn.style.opacity = '1';
+              nextBtn.textContent = nextBtn.dataset.originalText;
+              nextBtn.dataset.timerCompleted = 'true';
+            } else {
+              nextBtn.textContent = 'Next (' + remaining + 's) →';
+            }
+          }, 1000);
+        }
+      }
+      
+      // Notify parent frame if embedded
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'slideChange',
+          slide: n,
+          module: 'supply-chain'
+        }, '*');
+      }
+      
+      // Show fake popup when reaching slide 5
+      if (n === 5) {
+        setTimeout(() => {
+          const popup = document.getElementById('fakePopup');
+          if (popup) {
+            popup.classList.add('show');
+          }
+        }, 800);
+        // Restore choices with minimal delay
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+      
+      // Restore choices when reaching slide 6 (URL detection)
+      if (n === 6) {
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+      
+      // Restore choices when reaching slide 7
+      if (n === 7) {
+        if (gameState.choices && Object.keys(gameState.choices).length > 0) {
+          setTimeout(restoreChoices, 50);
+        }
+      }
+      
+    }
+    
+    function nextSlide() {
+      if (gameState.currentSlide < gameState.totalSlides) {
+        if (gameState.currentSlide + 1 === gameState.totalSlides && (!gameState.trustComplete || !gameState.responseComplete || gameState.urlsFound < gameState.totalSuspiciousUrls)) {
+          return;
+        }
+        showSlide(gameState.currentSlide + 1);
+      }
+    }
+    
+    function previousSlide() {
+      if (gameState.currentSlide > 1) {
+        showSlide(gameState.currentSlide - 1);
+      }
+    }
+    
+    function startTraining() {
+      showAchievement('🚀', 'Training Started!', 'Your supply chain security journey begins!');
+      nextSlide();
+    }
+    
+    // Completion
+    function completeTraining() {
+      if (!gameState.trustComplete || !gameState.responseComplete || gameState.urlsFound < gameState.totalSuspiciousUrls) {
+        console.warn('Training completion requires finishing all scenarios.');
+        return;
+      }
+
+      // Set to 100% since they completed all simulations
+      const finalScore = 100;
+      
+      document.getElementById('finalScore').textContent = finalScore + '%';
+      
+      // Notify parent frame if embedded
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          type: 'moduleComplete',
+          module: 'supply-chain'
+        }, '*');
+      }
+      
+      // Update SCORM
+      scorm.setValue('cmi.core.score.raw', String(finalScore));
+      scorm.setValue('cmi.core.lesson_status', finalScore >= 80 ? 'passed' : 'completed');
+      scorm.commit();
+      
+      showSlide(8);
+      launchConfetti();
+      showAchievement('🏆', 'Training Complete!', 'You are now a Supply Chain Security Expert!');
+    }
+    
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      container.style.display = 'block';
+      const colors = ['#7B2CBF', '#4CAF50', '#FFD700', '#FF6B6B', '#4ECDC4'];
+      
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.width = (Math.random() * 10 + 5) + 'px';
+          confetti.style.height = confetti.style.width;
+          confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          confetti.style.animationDelay = Math.random() * 0.5 + 's';
+          container.appendChild(confetti);
+          
+          setTimeout(() => confetti.remove(), 4000);
+        }, i * 30);
+      }
+    }
+    
+    // Update SCORM
+    // Choice persistence functions
+    function saveChoice(slideId, choice) {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'choiceUpdate',
+          slideId: slideId,
+          choice: choice,
+          choicesData: {
+            choices: gameState.choices,
+            scenariosCompleted: gameState.scenariosCompleted || 0,
+            urlsChecked: gameState.urlsChecked || []
+          }
+        }, '*');
+      }
+    }
+    
+    function restoreChoices() {
+      const choicesData = gameState.choices || {};
+      
+      // Reset scenario count before restoration
+      gameState.scenariosCompleted = 0;
+      
+      // Restore trust decision with visual indicators
+      if (choicesData['trust_decision'] && gameState.currentSlide === 5) {
+        const choice = choicesData['trust_decision'];
+        const feedbackDiv = document.getElementById('trustFeedback');
+        const buttons = document.querySelectorAll('#slide5 .decision-btn');
+        
+        // Find the selected button based on the saved choice
+        let selectedButton = null;
+        buttons.forEach(btn => {
+          if ((choice === 'normal' && btn.textContent.includes('This package looks safe')) ||
+              (choice === 'plugin' && btn.textContent.includes('postinstall script is suspicious')) ||
+              (choice === 'url' && btn.textContent.includes('Just check the download count')) ||
+              (choice === 'leave' && btn.textContent.includes('Skip this package entirely'))) {
+            selectedButton = btn;
+          }
+        });
+        
+        if (selectedButton && feedbackDiv) {
+          // Make non-selected buttons faded
+          buttons.forEach(btn => {
+            if (btn !== selectedButton) {
+              btn.style.opacity = '0.7';
+              btn.style.transform = 'scale(0.98)';
+            }
+          });
+          
+          // Determine colors based on choice
+          const isCorrect = choice === 'plugin';
+          const isPartial = choice === 'url' || choice === 'leave';
+          const color = isCorrect ? '#4CAF50' : (isPartial ? '#ff9800' : '#f44336');
+          const darkColor = isCorrect ? '#2E7D32' : (isPartial ? '#E65100' : '#C62828');
+          const icon = isCorrect ? '✅' : (isPartial ? '⚠️' : '❌');
+          
+          // Apply strong visual highlighting
+          selectedButton.style.background = `linear-gradient(135deg, ${color}, ${darkColor})`;
+          selectedButton.style.color = 'white';
+          selectedButton.style.fontWeight = 'bold';
+          selectedButton.style.border = `4px solid ${darkColor}`;
+          selectedButton.style.transform = 'scale(1.12)';
+          selectedButton.style.boxShadow = `0 8px 30px ${color}66, 0 0 25px ${color}44`;
+          selectedButton.style.opacity = '1';
+          selectedButton.style.position = 'relative';
+          selectedButton.style.zIndex = '100';
+          
+          // Remove any existing indicators first
+          const existingIndicator = selectedButton.querySelector('.action-indicator');
+          if (existingIndicator) existingIndicator.remove();
+          const existingLabel = selectedButton.querySelector('.action-label');
+          if (existingLabel) existingLabel.remove();
+          
+          // Add fresh icon
+          const iconEl = document.createElement('span');
+          iconEl.className = 'action-indicator';
+          iconEl.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+          iconEl.textContent = icon;
+          selectedButton.insertBefore(iconEl, selectedButton.firstChild);
+          
+          // Add fresh label
+          const label = document.createElement('div');
+          label.className = 'action-label';
+          label.style.cssText = `
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${color};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          `;
+          label.textContent = '🎯 YOUR CHOICE';
+          selectedButton.appendChild(label);
+          
+          // Show appropriate feedback
+          if (choice === 'plugin') {
+            feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+              ✅ Excellent! A postinstall script that downloads remote code is a major red flag for supply chain attacks!
+            </div>`;
+            gameState.trustComplete = true;
+            const btn = document.getElementById('trustContinue');
+            if (btn) btn.style.display = 'inline-flex';
+            // Disable all buttons after correct answer
+            buttons.forEach(btn => {
+              btn.disabled = true;
+              if (btn !== selectedButton) {
+                btn.style.opacity = '0.6';
+              }
+            });
+          } else if (choice === 'url') {
+            feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+              ⚠️ Good instinct to check downloads, but did you see the suspicious postinstall script?
+            </div>`;
+          } else if (choice === 'leave') {
+            feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+              ⚠️ Skipping is safe, but identifying the specific threat (postinstall script) is important for your team!
+            </div>`;
+          } else if (choice === 'normal') {
+            feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+              ❌ Look more carefully! Did you notice the suspicious postinstall script and other red flags?
+            </div>`;
+          }
+        }
+      }
+      
+      // Restore URL checks
+      gameState.urlsFound = 0; // Reset before restoration
+      if (!gameState.urlsChecked) gameState.urlsChecked = [];
+      
+      // Clear the urlsChecked array first, then rebuild from saved choices
+      gameState.urlsChecked = [];
+      
+      Object.keys(choicesData).forEach(key => {
+        if (key.startsWith('url_')) {
+          const url = key.replace('url_', '');
+          gameState.urlsChecked.push(url);
+          
+          const element = document.querySelector(`[onclick*="${url}"]`);
+          if (element) {
+            element.classList.remove('correct', 'incorrect');
+            
+            if (suspiciousPackages[url]) {
+              element.classList.add('correct');
+              gameState.urlsFound++;
+            } else {
+              element.classList.add('incorrect');
+            }
+          }
+        }
+      });
+      
+      // Update URL score
+      const scoreEl = document.getElementById('urlScore');
+      if (scoreEl) {
+        scoreEl.textContent = gameState.urlsFound + '/' + gameState.totalSuspiciousUrls;
+        // Show continue button if all found
+        if (gameState.urlsFound === gameState.totalSuspiciousUrls) {
+          const btn = document.getElementById('urlContinue');
+          if (btn) btn.style.display = 'inline-flex';
+        }
+      }
+      
+      // Restore response decision with visual indicators
+      if (choicesData['response_decision'] && gameState.currentSlide === 7) {
+        const choice = choicesData['response_decision'];
+        const feedbackDiv = document.getElementById('responseFeedback');
+        const buttons = document.querySelectorAll('#slide7 .decision-btn');
+        
+        // Find the selected button based on the saved choice
+        let selectedButton = null;
+        buttons.forEach(btn => {
+          if ((choice === 'login' && btn.textContent.includes('Wait for npm to remove it')) ||
+              (choice === 'verify' && btn.textContent.includes('Ignore')) ||
+              (choice === 'password' && btn.textContent.includes('Remove the dependency entirely')) ||
+              (choice === 'report' && btn.textContent.includes('Pin to safe version'))) {
+            selectedButton = btn;
+          }
+        });
+        
+        if (selectedButton && feedbackDiv) {
+          // Make non-selected buttons faded
+          buttons.forEach(btn => {
+            if (btn !== selectedButton) {
+              btn.style.opacity = '0.7';
+              btn.style.transform = 'scale(0.98)';
+            }
+          });
+          
+          // Determine colors based on choice
+          const isCorrect = choice === 'report';
+          const isPartial = choice === 'password';
+          const color = isCorrect ? '#4CAF50' : (isPartial ? '#ff9800' : '#f44336');
+          const darkColor = isCorrect ? '#2E7D32' : (isPartial ? '#E65100' : '#C62828');
+          const icon = isCorrect ? '✅' : (isPartial ? '⚠️' : '❌');
+          
+          // Apply strong visual highlighting
+          selectedButton.style.background = `linear-gradient(135deg, ${color}, ${darkColor})`;
+          selectedButton.style.color = 'white';
+          selectedButton.style.fontWeight = 'bold';
+          selectedButton.style.border = `4px solid ${darkColor}`;
+          selectedButton.style.transform = 'scale(1.12)';
+          selectedButton.style.boxShadow = `0 8px 30px ${color}66, 0 0 25px ${color}44`;
+          selectedButton.style.opacity = '1';
+          selectedButton.style.position = 'relative';
+          selectedButton.style.zIndex = '100';
+          
+          // Remove any existing indicators first
+          const existingIndicator = selectedButton.querySelector('.action-indicator');
+          if (existingIndicator) existingIndicator.remove();
+          const existingLabel = selectedButton.querySelector('.action-label');
+          if (existingLabel) existingLabel.remove();
+          
+          // Add fresh icon
+          const iconEl = document.createElement('span');
+          iconEl.className = 'action-indicator';
+          iconEl.style.cssText = 'margin-right: 12px; font-size: 1.6em; vertical-align: middle;';
+          iconEl.textContent = icon;
+          selectedButton.insertBefore(iconEl, selectedButton.firstChild);
+          
+          // Add fresh label
+          const label = document.createElement('div');
+          label.className = 'action-label';
+          label.style.cssText = `
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${color};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          `;
+          label.textContent = '🎯 YOUR CHOICE';
+          selectedButton.appendChild(label);
+          
+          // Show appropriate feedback
+          if (choice === 'report') {
+            feedbackDiv.innerHTML = `<div class="feedback correct" style="display:block;">
+              ✅ Correct! Pin to the last known safe version (colors@1.4.0), investigate which builds were affected, and alert your security team.
+            </div>`;
+            gameState.responseComplete = true;
+            const btn = document.getElementById('responseContinue');
+            if (btn) btn.style.display = 'inline-flex';
+            // Disable all buttons after correct answer
+            buttons.forEach(btn => {
+              btn.disabled = true;
+              if (btn !== selectedButton) {
+                btn.style.opacity = '0.6';
+              }
+            });
+          } else if (choice === 'login') {
+            feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+              ❌ Waiting is risky! The compromised package is actively running in your builds. You need to act immediately.
+            </div>`;
+          } else if (choice === 'password') {
+            feedbackDiv.innerHTML = `<div class="feedback warning" style="display:block;">
+              ⚠️ Removing entirely works if you can, but the best immediate action is pinning to a safe version while you investigate the full impact.
+            </div>`;
+          } else if (choice === 'verify') {
+            feedbackDiv.innerHTML = `<div class="feedback incorrect" style="display:block;">
+              ❌ Ignoring a compromised dependency is dangerous! Even if it seems like a dev-only issue, malicious code can exfiltrate secrets from your CI environment.
+            </div>`;
+          }
+        }
+      }
+      
+    }
+
+    function updateSCORM() {
+      if (scorm.api) {
+        scorm.setValue('cmi.core.lesson_location', String(gameState.currentSlide));
+        scorm.setValue('cmi.suspend_data', JSON.stringify({
+          currentSlide: gameState.currentSlide,
+          achievements: gameState.achievements
+        }));
+        scorm.commit();
+      }
+    }
+    
+    // Initialize
+    window.onload = function() {
+      
+      // Check if SCORM should be disabled (when loaded in iframe)
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('scorm') !== 'disabled') {
+        scorm.init();
+      }
+      
+      // Check if we should resume from a specific slide
+      const resumeSlide = urlParams.get('slide');
+      if (resumeSlide && !isNaN(resumeSlide) && parseInt(resumeSlide) >= 1 && parseInt(resumeSlide) <= gameState.totalSlides - 2) {
+        gameState.currentSlide = parseInt(resumeSlide);
+        // Show the correct slide immediately to avoid flash
+        showSlide(gameState.currentSlide);
+      }
+      
+      
+      // Restore choices if provided
+      const savedChoices = urlParams.get('choices');
+      if (savedChoices) {
+        try {
+          const choicesData = JSON.parse(decodeURIComponent(savedChoices));
+          if (choicesData.choices !== undefined) {
+            gameState.choices = choicesData.choices;
+            gameState.scenariosCompleted = choicesData.scenariosCompleted || 0;
+            // Don't restore urlsChecked here - it will be rebuilt from choices
+          } else {
+            gameState.choices = choicesData;
+          }
+          // Don't restore here - will be done when reaching the specific slide
+        } catch (e) {
+          console.warn('Failed to parse saved choices:', e);
+        }
+      }
+      
+      updateProgress();
+      updateSCORM();
+      
+      // If we're resuming on a slide with choices, restore them with minimal delay
+      if ((gameState.currentSlide === 5 || gameState.currentSlide === 6 || gameState.currentSlide === 7) && savedChoices) {
+        setTimeout(restoreChoices, 50);
+      }
+      
+    };
+    
+    function exitModule() {
+      scorm.setValue('cmi.core.exit', '');
+      scorm.commit();
+      scorm.finish();
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'goHome' }, '*');
+      } else {
+        window.close();
+        setTimeout(() => { alert('You can now close this window.'); }, 100);
+      }
+    }
+
+    // Owl easter egg
+    function owlClick() {
+      const owl = document.querySelector('.grc-owl');
+      owl.style.animation = 'none';
+      setTimeout(() => {
+        owl.style.animation = 'bounce 2s ease-in-out infinite, spin 0.5s ease';
+      }, 10);
+      if (!gameState.achievements.includes('owl')) {
+        gameState.achievements.push('owl');
+        showAchievement('👾', 'Wise Discovery!', 'You found the easter egg!');
+      }
+      // If in iframe, send message to parent to go home
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: 'goHome' }, '*');
+      }
+    }
+
+    window.startTraining = startTraining;
+    window.nextSlide = nextSlide;
+    window.previousSlide = previousSlide;
+    window.completeTraining = function() {
+      if (!_verifyCompletion()) return;
+      completeTraining();
+    };
+    window.exitModule = exitModule;
+    window.owlClick = owlClick;
+    window.trustDecision = trustDecision;
+    window.showWarning = showWarning;
+    window.checkURL = checkURL;
+    window.responseDecision = responseDecision;
+    window.closePluginWarningPopup = closePluginWarningPopup;
+  })();
+  </script>
+</body>
+</html>
